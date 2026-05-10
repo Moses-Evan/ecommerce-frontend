@@ -1,22 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --font-size: 16px;
-  --background: #FFF8F0;
-  --foreground: #2C2C2C;
+  --background: #fff8f0;
+  --foreground: #2c2c2c;
   --card: #ffffff;
-  --card-foreground: #2C2C2C;
+  --card-foreground: #2c2c2c;
   --popover: #ffffff;
-  --popover-foreground: #2C2C2C;
-  --primary: #7D1E3F;
-  --primary-foreground: #FFF8F0;
-  --secondary: #C9A050;
-  --secondary-foreground: #2C2C2C;
-  --muted: #E8D7C3;
-  --muted-foreground: #6B5D4F;
-  --accent: #2B5F9E;
+  --popover-foreground: #2c2c2c;
+  --primary: #7d1e3f;
+  --primary-foreground: #fff8f0;
+  --secondary: #c9a050;
+  --secondary-foreground: #2c2c2c;
+  --muted: #e8d7c3;
+  --muted-foreground: #6b5d4f;
+  --accent: #2b5f9e;
   --accent-foreground: #ffffff;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
@@ -26,7 +26,7 @@
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #C9A050;
+  --ring: #c9a050;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -35,8 +35,8 @@
   --radius: 0.375rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #7D1E3F;
-  --sidebar-primary-foreground: #FFF8F0;
+  --sidebar-primary: #7d1e3f;
+  --sidebar-primary-foreground: #fff8f0;
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
@@ -191,9 +191,32 @@ html {
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Playfair Display", serif;
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@layer base {
+  .page-transition {
+    animation: page-fade-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
 }

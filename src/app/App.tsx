@@ -1,5 +1,8 @@
 import { CartProvider } from "./contexts/CartContext";
-import { NavigationProvider, useNavigation } from "./contexts/NavigationContext";
+import {
+  NavigationProvider,
+  useNavigation,
+} from "./contexts/NavigationContext";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { HomePage } from "./pages/HomePage";
@@ -45,7 +48,12 @@ function AppContent() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1">
-        {renderPage()}
+        <div
+          key={`${currentPage}-${JSON.stringify(params)}`}
+          className="page-transition min-h-full"
+        >
+          {renderPage()}
+        </div>
       </div>
       <Footer />
     </div>
