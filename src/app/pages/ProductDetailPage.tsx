@@ -1,226 +1,446 @@
-import { useState } from "react";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { products } from "../data/products";
+import { useState, useEffect } from "react";
+import {
+  ShoppingCart,
+  Heart,
+  Share2,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+  Minus,
+  Plus,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { ShoppingCart, Heart, Share2, Ruler, Info } from "lucide-react";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ProductCard } from "../components/ProductCard";
 import { useCart } from "../contexts/CartContext";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { getProductById } from "../../api/productApi";
+import { Product } from "../../types/Product";
 
 interface ProductDetailPageProps {
   productId: string;
+  relatedProducts?: Product[];
 }
 
-export function ProductDetailPage({ productId }: ProductDetailPageProps) {
-  const product = products.find(p => p.id === productId);
+const sizes = ["XS", "S", "M", "L", "XL"];
+
+export function ProductDetailPage({
+  productId,
+  relatedProducts = [],
+}: ProductDetailPageProps) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedSize, setSelectedSize] = useState("M");
+
   const { addItem } = useCart();
 
-  if (!product) {
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const productData = await getProductById(productId);
+        // productData.productBestSeller = true;
+        setProduct(productData);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl mb-4">Product not found</h2>
-          <p className="text-muted-foreground">The product you're looking for doesn't exist.</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading product details...</p>
         </div>
       </div>
     );
   }
 
-  const relatedProducts = products.filter(
-    p => p.category === product.category && p.id !== product.id
-  ).slice(0, 4);
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Product not found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const discount = product.productDiscount || 0;
 
   const handleAddToCart = () => {
-    addItem({ ...product, quantity });
+    addItem({
+      id: product.id,
+      name: product.productName,
+      price: product.productSellingPrice,
+      image: product.productImages[0],
+      fabric: product.productFabricType,
+      quantity,
+    });
   };
 
-  const discount = product.originalPrice 
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
-
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-background py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <div className="mb-8 text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground mb-8 flex flex-wrap gap-2">
           <span className="hover:text-primary cursor-pointer">Home</span>
-          <span className="mx-2">/</span>
-          <span className="hover:text-primary cursor-pointer capitalize">{product.category}</span>
-          <span className="mx-2">/</span>
-          <span className="text-foreground">{product.name}</span>
+
+          <span>/</span>
+
+          <span className="text-foreground">{product.productName}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Image Gallery */}
+          {/* LEFT SIDE */}
           <div>
-            <div className="bg-muted rounded-lg overflow-hidden mb-4 aspect-[3/4]">
-              <ImageWithFallback
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {[product.image, product.image, product.image, product.image].map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer border-2 ${
-                    selectedImage === idx ? 'border-primary' : 'border-transparent'
-                  }`}
-                  onClick={() => setSelectedImage(idx)}
-                >
-                  <ImageWithFallback
-                    src={img}
-                    alt={`${product.name} ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+            {/* MAIN IMAGE */}
+            <div className="flex-1">
+              <div className="relative overflow-hidden rounded-3xl  aspect-[3/4] mb-6 ">
+                {discount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute top-4 left-4 z-10"
+                  >
+                    {discount}% OFF
+                  </Badge>
+                )}
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedImage}
+                    initial={{ opacity: 0.5, scale: 1.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 1, scale: 0.98 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <ImageWithFallback
+                      src={product.productImages[selectedImage]}
+                      alt={product.productName}
+                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* THUMBNAILS */}
+              <div className="grid grid-cols-4 gap-2">
+                {product.productImages.map((img: string, idx: number) => (
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`aspect-[3/4] bg-muted rounded-xl overflow-hidden border-2 cursor-pointer hover:bg-accent/90 transition-all duration-300 ${
+                      selectedImage === idx
+                        ? "border-primary scale-95"
+                        : "border-border"
+                    }`}
+                  >
+                    <ImageWithFallback
+                      src={img}
+                      alt={`thumb-${idx}`}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Product Info */}
+          {/* RIGHT SIDE */}
           <div>
             <div className="flex gap-2 mb-4">
-              {product.isNew && <Badge className="bg-accent">New</Badge>}
-              {product.isBestseller && <Badge className="bg-secondary text-secondary-foreground">Bestseller</Badge>}
-              {discount > 0 && <Badge variant="destructive">{discount}% OFF</Badge>}
+              {product.productBestSeller && (
+                <Badge className="bg-red-500">New</Badge>
+              )}
+              {product.productBestSeller && (
+                <Badge className="bg-yellow-500 text-secondary-foreground">
+                  Bestseller
+                </Badge>
+              )}
+              {discount > 0 && (
+                <Badge variant="destructive">{discount}% OFF</Badge>
+              )}
             </div>
+            <h1 className="text-3xl md:text-4xl mb-4">{product.productName}</h1>
 
-            <h1 className="text-3xl md:text-4xl mb-4">{product.name}</h1>
-            
-            {product.designer && (
-              <p className="text-muted-foreground mb-4">by {product.designer}</p>
-            )}
+            <p className="text-muted-foreground mb-6">{product.productBrand}</p>
 
-            <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-3xl text-primary">₹{product.price.toLocaleString()}</span>
-              {product.originalPrice && (
+            {/* PRICE */}
+            <div className="flex items-center gap-4 mb-6">
+              <span className="text-3xl text-primary">
+                €{product.productSellingPrice.toLocaleString()}
+              </span>
+
+              {product.productMrp && (
                 <span className="text-xl text-muted-foreground line-through">
-                  ₹{product.originalPrice.toLocaleString()}
+                  €{product.productMrp.toLocaleString()}
                 </span>
               )}
             </div>
 
-            <p className="text-foreground mb-6 leading-relaxed">
-              {product.description}
-            </p>
+            {/* STOCK */}
+            <div className="mb-6">
+              {product.productStock > 0 ? (
+                <div className="space-y-3">
+                  <Badge className="bg-green-600">In Stock</Badge>
+                  {product.productStock < 10 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold">
+                        <span className="text-foreground">Hurry up!</span>
+                        <motion.span
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1.2, repeat: Infinity }}
+                          className="inline-flex h-2.5 w-2.5 rounded-full bg-accent"
+                        />
+                      </div>
 
-            {/* Product Details */}
-            <div className="bg-muted/30 rounded-lg p-6 mb-6 space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Fabric:</span>
-                <span>{product.fabric}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Color:</span>
-                <span>{product.color}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Length:</span>
-                <span>{product.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Occasion:</span>
-                <span>{product.occasion}</span>
-              </div>
+                      <p className="text-sm text-foreground">
+                        Only{" "}
+                        <span className="text-primary">
+                          {product.productStock}
+                        </span>{" "}
+                        left in stock.
+                      </p>
+
+                      <div className="space-y-1">
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{
+                              width: `${Math.max(1, product.productStock) * 10}%`,
+                            }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            className="h-full rounded-full bg-gradient-to-r from-primary to-rose-500"
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Low stock</span>
+                          <span>{product.productStock} pcs left</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Badge variant="destructive">Out of Stock</Badge>
+              )}
             </div>
 
-            {/* Quantity Selector */}
-            <div className="mb-6">
-              <Label className="mb-2 block">Quantity</Label>
-              <div className="flex items-center gap-3">
+            {/* DESCRIPTION */}
+            <p className="text-muted-foreground leading-7 mb-8">
+              {product.productDescription}
+            </p>
+
+            {/* SIZE */}
+            {/* <div className="mb-8">
+              <h3 className="font-medium mb-3">Select Size</h3>
+
+              <div className="flex flex-wrap gap-3">
+                {sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`w-14 h-14 rounded-xl border ${
+                      selectedSize === size
+                        ? "bg-black text-white border-black"
+                        : "border-border"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div> */}
+
+            {/* QUANTITY */}
+            <div className="mb-8">
+              <h3 className="font-medium mb-3">Quantity</h3>
+
+              <div className="flex items-center border rounded-xl w-fit overflow-hidden">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="cursor-pointer"
                 >
-                  -
+                  <Minus className="w-4 h-4" />
                 </Button>
                 <span className="w-12 text-center">{quantity}</span>
+
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setQuantity(quantity + 1)}
+                  className="cursor-pointer"
                 >
-                  +
+                  <Plus className="w-4 h-4" />
                 </Button>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-3 mb-6">
-              <Button onClick={handleAddToCart} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90" size="lg">
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart
+            {/* ACTION BUTTONS */}
+            <div className="flex gap-3 mb-8">
+              <Button
+                size="lg"
+                className="flex-1 h-14"
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Add To Cart
               </Button>
-              <Button variant="outline" size="lg">
-                <Heart className="h-5 w-5" />
+
+              <Button variant="outline" size="lg" className="h-14 w-14">
+                <Heart className="w-5 h-5" />
               </Button>
-              <Button variant="outline" size="lg">
-                <Share2 className="h-5 w-5" />
+
+              <Button variant="outline" size="lg" className="h-14 w-14">
+                <Share2 className="w-5 h-5" />
               </Button>
             </div>
 
-            {/* Additional Info */}
-            <div className="border-t border-border pt-6 space-y-4">
-              <div className="flex items-start gap-3">
-                <Ruler className="h-5 w-5 text-secondary mt-0.5" />
+            {/* FEATURES */}
+            <div className="space-y-5 border-t pt-6">
+              <div className="flex gap-4">
+                <Truck className="w-5 h-5 mt-1 text-primary" />
+
                 <div>
-                  <p>Size Guide</p>
-                  <p className="text-sm text-muted-foreground">View our comprehensive size guide</p>
+                  <p className="font-medium">Free Shipping</p>
+
+                  <p className="text-sm text-muted-foreground">
+                    On orders above 200€
+                  </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <Info className="h-5 w-5 text-secondary mt-0.5" />
+
+              <div className="flex gap-4">
+                <RotateCcw className="w-5 h-5 mt-1 text-primary" />
+
                 <div>
-                  <p>Care Instructions</p>
-                  <p className="text-sm text-muted-foreground">{product.care}</p>
+                  <p className="font-medium">Easy Returns</p>
+
+                  <p className="text-sm text-muted-foreground">
+                    7 day return policy
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <ShieldCheck className="w-5 h-5 mt-1 text-primary" />
+
+                <div>
+                  <p className="font-medium">Secure Payments</p>
+
+                  <p className="text-sm text-muted-foreground">
+                    100% secure checkout
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tabs Section */}
-        <Tabs defaultValue="description" className="mb-16">
-          <TabsList>
-            <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
-            <TabsTrigger value="shipping">Shipping Info</TabsTrigger>
-          </TabsList>
-          <TabsContent value="description" className="mt-6">
-            <div className="prose max-w-none">
-              <p>{product.description}</p>
-              <p className="mt-4">
-                This exquisite saree is crafted with the finest materials and showcases exceptional craftsmanship. 
-                Each piece is carefully handpicked to ensure the highest quality and authenticity. The intricate 
-                details and traditional motifs make this saree a timeless addition to your wardrobe.
-              </p>
-            </div>
-          </TabsContent>
-          <TabsContent value="reviews" className="mt-6">
-            <p className="text-muted-foreground">Customer reviews coming soon...</p>
-          </TabsContent>
-          <TabsContent value="shipping" className="mt-6">
-            <div className="space-y-4">
-              <p>Free shipping on orders above ₹2999</p>
-              <p>Estimated delivery: 5-7 business days</p>
-              <p>Cash on Delivery available</p>
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* TABS */}
+        <div className="mt-20">
+          <Tabs defaultValue="description">
+            <TabsList className="mb-8">
+              <TabsTrigger value="description">Description</TabsTrigger>
 
-        {/* Related Products */}
+              <TabsTrigger value="details">Details</TabsTrigger>
+
+              <TabsTrigger value="shipping">Shipping</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="description">
+              <p className="text-muted-foreground leading-8">
+                {product.productDescription}
+              </p>
+            </TabsContent>
+
+            <TabsContent value="details">
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="border rounded-2xl p-5">
+                  <p className="text-muted-foreground">Brand</p>
+
+                  <p className="font-medium">{product.productBrand}</p>
+                </div>
+
+                <div className="border rounded-2xl p-5">
+                  <p className="text-muted-foreground">Color</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{product.productColor} </p>
+                    <p
+                      className="inline-flex h-4.5 w-4.5 rounded-full"
+                      style={{ backgroundColor: product.productColorCode }}
+                    ></p>
+                  </div>
+                </div>
+
+                <div className="border rounded-2xl p-5">
+                  <p className="text-muted-foreground">Fabric</p>
+
+                  <p className="font-medium">{product.productFabricType}</p>
+                </div>
+
+                <div className="border rounded-2xl p-5">
+                  <p className="text-muted-foreground">Occasion</p>
+
+                  <p className="font-medium">
+                    {product.productOccasion.join(", ")}
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="shipping">
+              <div className="space-y-4 text-muted-foreground">
+                <p>Free shipping on orders above 200€</p>
+
+                <p>Estimated delivery within 5-7 business days</p>
+
+                <p>Cash on Delivery available</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* RELATED PRODUCTS */}
         {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-3xl mb-8">You May Also Like</h2>
+          <div className="mt-24">
+            <h2 className="text-3xl font-semibold mb-8">Related Products</h2>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map(product => (
-                <ProductCard key={product.id} {...product} />
+              {relatedProducts.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  id={item.id}
+                  productName={item.productName}
+                  productSellingPrice={item.productSellingPrice}
+                  productMrp={item.productMrp}
+                  productImages={item.productImages}
+                  productBestSeller={item.productBestSeller}
+                  productFabricType={item.productFabricType}
+                  productDiscount={item.productDiscount}
+                />
               ))}
             </div>
           </div>
@@ -228,8 +448,4 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
       </div>
     </div>
   );
-}
-
-function Label({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <label className={className}>{children}</label>;
 }

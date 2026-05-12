@@ -23,7 +23,7 @@ export function CheckoutPage() {
     address: "",
     city: "",
     state: "",
-    pincode: ""
+    pincode: "",
   });
 
   const shipping = totalPrice > 2999 ? 0 : 200;
@@ -59,13 +59,20 @@ export function CheckoutPage() {
             </div>
             <h2 className="text-3xl mb-4">Order Placed Successfully!</h2>
             <p className="text-muted-foreground mb-8">
-              Thank you for your purchase. Your order confirmation has been sent to your email.
+              Thank you for your purchase. Your order confirmation has been sent
+              to your email.
             </p>
             <div className="bg-muted/30 rounded-lg p-6 mb-8">
               <p className="text-sm text-muted-foreground mb-2">Order Number</p>
-              <p className="text-2xl">#DV{Math.floor(Math.random() * 100000)}</p>
+              <p className="text-2xl">
+                #DV{Math.floor(Math.random() * 100000)}
+              </p>
             </div>
-            <Button onClick={() => navigate("home")} size="lg" className="w-full">
+            <Button
+              onClick={() => navigate("home")}
+              size="lg"
+              className="w-full"
+            >
               Continue Shopping
             </Button>
           </div>
@@ -84,15 +91,23 @@ export function CheckoutPage() {
           <div className="lg:col-span-2">
             {/* Progress Steps */}
             <div className="flex items-center mb-8">
-              <div className={`flex-1 flex items-center ${step === "info" ? "text-primary" : "text-muted-foreground"}`}>
-                <div className={`rounded-full h-8 w-8 flex items-center justify-center border-2 ${step === "info" ? "border-primary bg-primary text-white" : "border-muted-foreground"}`}>
+              <div
+                className={`flex-1 flex items-center ${step === "info" ? "text-primary" : "text-muted-foreground"}`}
+              >
+                <div
+                  className={`rounded-full h-8 w-8 flex items-center justify-center border-2 ${step === "info" ? "border-primary bg-primary text-white" : "border-muted-foreground"}`}
+                >
                   1
                 </div>
                 <div className="ml-2">Shipping Info</div>
               </div>
               <div className="flex-1 h-0.5 bg-border mx-4" />
-              <div className={`flex-1 flex items-center ${step === "payment" ? "text-primary" : "text-muted-foreground"}`}>
-                <div className={`rounded-full h-8 w-8 flex items-center justify-center border-2 ${step === "payment" ? "border-primary bg-primary text-white" : "border-muted-foreground"}`}>
+              <div
+                className={`flex-1 flex items-center ${step === "payment" ? "text-primary" : "text-muted-foreground"}`}
+              >
+                <div
+                  className={`rounded-full h-8 w-8 flex items-center justify-center border-2 ${step === "payment" ? "border-primary bg-primary text-white" : "border-muted-foreground"}`}
+                >
                   2
                 </div>
                 <div className="ml-2">Payment</div>
@@ -110,7 +125,12 @@ export function CheckoutPage() {
                         id="firstName"
                         required
                         value={shippingInfo.firstName}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, firstName: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            firstName: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div>
@@ -119,7 +139,12 @@ export function CheckoutPage() {
                         id="lastName"
                         required
                         value={shippingInfo.lastName}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, lastName: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            lastName: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div className="col-span-2">
@@ -129,7 +154,12 @@ export function CheckoutPage() {
                         type="email"
                         required
                         value={shippingInfo.email}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, email: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            email: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div className="col-span-2">
@@ -139,7 +169,12 @@ export function CheckoutPage() {
                         type="tel"
                         required
                         value={shippingInfo.phone}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, phone: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            phone: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div className="col-span-2">
@@ -148,7 +183,12 @@ export function CheckoutPage() {
                         id="address"
                         required
                         value={shippingInfo.address}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            address: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div>
@@ -157,7 +197,12 @@ export function CheckoutPage() {
                         id="city"
                         required
                         value={shippingInfo.city}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, city: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            city: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div>
@@ -166,7 +211,12 @@ export function CheckoutPage() {
                         id="state"
                         required
                         value={shippingInfo.state}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, state: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            state: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div className="col-span-2">
@@ -175,7 +225,12 @@ export function CheckoutPage() {
                         id="pincode"
                         required
                         value={shippingInfo.pincode}
-                        onChange={(e) => setShippingInfo({ ...shippingInfo, pincode: e.target.value })}
+                        onChange={(e) =>
+                          setShippingInfo({
+                            ...shippingInfo,
+                            pincode: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -185,7 +240,9 @@ export function CheckoutPage() {
                   <Checkbox
                     id="sameAsShipping"
                     checked={sameAsShipping}
-                    onCheckedChange={(checked) => setSameAsShipping(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setSameAsShipping(checked as boolean)
+                    }
                   />
                   <Label htmlFor="sameAsShipping" className="cursor-pointer">
                     Billing address same as shipping
@@ -202,25 +259,37 @@ export function CheckoutPage() {
               <form onSubmit={handlePlaceOrder} className="space-y-6">
                 <div className="bg-card border border-border rounded-lg p-6">
                   <h3 className="text-xl mb-4">Payment Method</h3>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={setPaymentMethod}
+                  >
                     <div className="space-y-3">
                       <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
                         <RadioGroupItem value="card" id="card" />
-                        <Label htmlFor="card" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <Label
+                          htmlFor="card"
+                          className="flex items-center gap-2 cursor-pointer flex-1"
+                        >
                           <CreditCard className="h-5 w-5" />
                           Credit / Debit Card
                         </Label>
                       </div>
                       <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
                         <RadioGroupItem value="upi" id="upi" />
-                        <Label htmlFor="upi" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <Label
+                          htmlFor="upi"
+                          className="flex items-center gap-2 cursor-pointer flex-1"
+                        >
                           <Wallet className="h-5 w-5" />
                           UPI
                         </Label>
                       </div>
                       <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
                         <RadioGroupItem value="cod" id="cod" />
-                        <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <Label
+                          htmlFor="cod"
+                          className="flex items-center gap-2 cursor-pointer flex-1"
+                        >
                           <Banknote className="h-5 w-5" />
                           Cash on Delivery
                         </Label>
@@ -232,7 +301,10 @@ export function CheckoutPage() {
                     <div className="mt-6 space-y-4">
                       <div>
                         <Label htmlFor="cardNumber">Card Number</Label>
-                        <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
+                        <Input
+                          id="cardNumber"
+                          placeholder="1234 5678 9012 3456"
+                        />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -241,7 +313,12 @@ export function CheckoutPage() {
                         </div>
                         <div>
                           <Label htmlFor="cvv">CVV</Label>
-                          <Input id="cvv" placeholder="123" type="password" maxLength={3} />
+                          <Input
+                            id="cvv"
+                            placeholder="123"
+                            type="password"
+                            maxLength={3}
+                          />
                         </div>
                       </div>
                     </div>
@@ -256,7 +333,12 @@ export function CheckoutPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button type="button" variant="outline" onClick={() => setStep("info")} className="flex-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep("info")}
+                    className="flex-1"
+                  >
                     Back
                   </Button>
                   <Button type="submit" size="lg" className="flex-1">
@@ -275,9 +357,13 @@ export function CheckoutPage() {
               <div className="space-y-3 mb-4">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3 text-sm">
-                    <span className="text-muted-foreground">{item.quantity}x</span>
+                    <span className="text-muted-foreground">
+                      {item.quantity}x
+                    </span>
                     <span className="flex-1 line-clamp-1">{item.name}</span>
-                    <span>₹{(item.price * item.quantity).toLocaleString()}</span>
+                    <span>
+                      €{(item.price * item.quantity).toLocaleString()}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -285,18 +371,20 @@ export function CheckoutPage() {
               <div className="border-t border-border pt-4 space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{totalPrice.toLocaleString()}</span>
+                  <span>€{totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>{shipping === 0 ? "FREE" : `₹${shipping}`}</span>
+                  <span>{shipping === 0 ? "FREE" : `€${shipping}`}</span>
                 </div>
               </div>
 
               <div className="border-t border-border pt-4">
                 <div className="flex justify-between">
                   <span>Total</span>
-                  <span className="text-2xl text-primary">₹{finalTotal.toLocaleString()}</span>
+                  <span className="text-2xl text-primary">
+                    €{finalTotal.toLocaleString()}
+                  </span>
                 </div>
               </div>
             </div>

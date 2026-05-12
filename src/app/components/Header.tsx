@@ -10,6 +10,8 @@ import {
   SheetClose,
 } from "./ui/sheet";
 
+
+
 export function Header() {
   const { navigate, currentPage } = useNavigation();
   const { totalItems } = useCart();
@@ -20,7 +22,7 @@ export function Header() {
       <div className="bg-primary text-primary-foreground py-2">
         <div className="container mx-auto px-4 flex justify-center items-center gap-4">
           <p className="text-sm">
-            Free Shipping on Orders Above 100€
+            Free Shipping on Orders Above 200€
           </p>
         </div>
       </div>
@@ -97,7 +99,11 @@ export function Header() {
             className="flex-1 lg:flex-initial cursor-pointer"
             onClick={() => navigate("home")}
           >
-            <h1 className="text-3xl text-primary tracking-tight">Niorra</h1>
+            {/* <h1 className="text-3xl text-primary tracking-tight">Niorra</h1> */}
+            <div className="text-3xl text-primary tracking-tight flex items-center gap-2">
+              <img src="src\images\logo-icon.png" width={80} alt="" />
+              <h1 style={{ color: "#b30220" }}>NIORRA</h1>
+            </div>
           </div>
 
           {/* Desktop Navigation */}
@@ -112,14 +118,32 @@ export function Header() {
               onClick={() => navigate("category", { category: "all" })}
               className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
             >
-              Collections
+              Womens Collections
             </button>
             <button
+              onClick={() => navigate("category", { category: "all" })}
+              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
+            >
+              Mens Collections
+            </button>
+            <button
+              onClick={() => navigate("category", { category: "all" })}
+              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
+            >
+              Kids Collections
+            </button>
+            <button
+              onClick={() => navigate("category", { category: "all" })}
+              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
+            >
+              Accessories
+            </button>
+            {/* <button
               onClick={() => navigate("about")}
               className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "about" ? "text-primary" : ""}`}
             >
               About Us
-            </button>
+            </button> */}
             <button
               onClick={() => navigate("contact")}
               className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "contact" ? "text-primary" : ""}`}
@@ -130,21 +154,21 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <button className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors">
+            <button className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer">
               <Search className="h-5 w-5" />
             </button>
-            <button className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors">
+            <button className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer">
               <Heart className="h-5 w-5" />
             </button>
             <button
               onClick={() => navigate("account")}
-              className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors"
+              className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
             >
               <User className="h-5 w-5" />
             </button>
             <button
               onClick={() => navigate("cart")}
-              className="p-2 hover:bg-accent/10 rounded-full transition-colors relative"
+              className="p-2 hover:bg-accent/10 rounded-full transition-colors relative cursor-pointer"
             >
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (

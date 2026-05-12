@@ -35,7 +35,10 @@ export function CartPage() {
             <p className="text-muted-foreground mb-8">
               Looks like you haven't added any items to your cart yet.
             </p>
-            <Button onClick={() => navigate("category", { category: "all" })} size="lg">
+            <Button
+              onClick={() => navigate("category", { category: "all" })}
+              size="lg"
+            >
               Continue Shopping
             </Button>
           </div>
@@ -53,8 +56,11 @@ export function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <div key={item.id} className="bg-card border border-border rounded-lg p-4 flex gap-4">
-                <div 
+              <div
+                key={item.id}
+                className="bg-card border border-border rounded-lg p-4 flex gap-4"
+              >
+                <div
                   className="w-24 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
                   onClick={() => navigate("product", { productId: item.id })}
                 >
@@ -66,30 +72,40 @@ export function CartPage() {
                 </div>
 
                 <div className="flex-1">
-                  <h3 
+                  <h3
                     className="mb-1 cursor-pointer hover:text-primary"
                     onClick={() => navigate("product", { productId: item.id })}
                   >
                     {item.name}
                   </h3>
                   {item.fabric && (
-                    <p className="text-sm text-muted-foreground mb-2">{item.fabric}</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {item.fabric}
+                    </p>
                   )}
                   <div className="flex items-center gap-4">
-                    <p className="text-primary">₹{item.price.toLocaleString()}</p>
-                    
+                    <p className="text-primary">€{item.price}</p>
+
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2 bg-muted rounded-md">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
                         className="p-2 hover:bg-background rounded-l-md transition-colors"
+                        title="Decrease quantity"
+                        aria-label="Decrease quantity"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
                       <span className="px-4">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
                         className="p-2 hover:bg-background rounded-r-md transition-colors"
+                        title="Increase quantity"
+                        aria-label="Increase quantity"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -101,10 +117,12 @@ export function CartPage() {
                   <button
                     onClick={() => removeItem(item.id)}
                     className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
+                    title="Remove item from cart"
+                    aria-label="Remove item from cart"
                   >
                     <Trash2 className="h-5 w-5" />
                   </button>
-                  <p>₹{(item.price * item.quantity).toLocaleString()}</p>
+                  <p>€{(item.price * item.quantity).toLocaleString()}</p>
                 </div>
               </div>
             ))}
@@ -128,7 +146,9 @@ export function CartPage() {
                   </Button>
                 </div>
                 {discount > 0 && (
-                  <p className="text-sm text-green-600 mt-2">Promo code applied!</p>
+                  <p className="text-sm text-green-600 mt-2">
+                    Promo code applied!
+                  </p>
                 )}
               </div>
 
@@ -136,31 +156,37 @@ export function CartPage() {
               <div className="space-y-3 mb-6 pb-6 border-b border-border">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{totalPrice.toLocaleString()}</span>
+                  <span>€{totalPrice.toLocaleString()}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
-                    <span>-₹{discount.toLocaleString()}</span>
+                    <span>-€{discount.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>{shipping === 0 ? "FREE" : `₹${shipping}`}</span>
+                  <span>{shipping === 0 ? "FREE" : `€${shipping}`}</span>
                 </div>
               </div>
 
               <div className="flex justify-between mb-6">
                 <span>Total</span>
-                <span className="text-2xl text-primary">₹{finalTotal.toLocaleString()}</span>
+                <span className="text-2xl text-primary">
+                  €{finalTotal.toLocaleString()}
+                </span>
               </div>
 
-              <Button onClick={() => navigate("checkout")} className="w-full mb-3" size="lg">
+              <Button
+                onClick={() => navigate("checkout")}
+                className="w-full mb-3"
+                size="lg"
+              >
                 Proceed to Checkout
               </Button>
-              <Button 
-                onClick={() => navigate("category", { category: "all" })} 
-                variant="outline" 
+              <Button
+                onClick={() => navigate("category", { category: "all" })}
+                variant="outline"
                 className="w-full"
               >
                 Continue Shopping
@@ -168,7 +194,8 @@ export function CartPage() {
 
               {totalPrice < 2999 && (
                 <p className="text-sm text-muted-foreground mt-4 text-center">
-                  Add ₹{(2999 - totalPrice).toLocaleString()} more for free shipping!
+                  Add €{(2999 - totalPrice).toLocaleString()} more for free
+                  shipping!
                 </p>
               )}
             </div>

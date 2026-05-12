@@ -3,7 +3,13 @@ import { ProductCard } from "../components/ProductCard";
 import { products } from "../data/products";
 import { Filter, SlidersHorizontal } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Checkbox } from "../components/ui/checkbox";
 import { Label } from "../components/ui/label";
 import { Slider } from "../components/ui/slider";
@@ -20,10 +26,12 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(true);
-  const [quickFilterCategory, setQuickFilterCategory] = useState<string | null>(null);
+  const [quickFilterCategory, setQuickFilterCategory] = useState<string | null>(
+    null,
+  );
 
-  const fabrics = Array.from(new Set(products.map(p => p.fabric)));
-  const colors = Array.from(new Set(products.map(p => p.color)));
+  const fabrics = Array.from(new Set(products.map((p) => p.fabric)));
+  const colors = Array.from(new Set(products.map((p) => p.color)));
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
@@ -31,20 +39,22 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
     // Filter by category (from route or quick filter)
     const activeCategory = category !== "all" ? category : quickFilterCategory;
     if (activeCategory) {
-      filtered = filtered.filter(p => p.category === activeCategory);
+      filtered = filtered.filter((p) => p.category === activeCategory);
     }
 
     // Filter by price
-    filtered = filtered.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    filtered = filtered.filter(
+      (p) => p.price >= priceRange[0] && p.price <= priceRange[1],
+    );
 
     // Filter by fabric
     if (selectedFabrics.length > 0) {
-      filtered = filtered.filter(p => selectedFabrics.includes(p.fabric));
+      filtered = filtered.filter((p) => selectedFabrics.includes(p.fabric));
     }
 
     // Filter by color
     if (selectedColors.length > 0) {
-      filtered = filtered.filter(p => selectedColors.includes(p.color));
+      filtered = filtered.filter((p) => selectedColors.includes(p.color));
     }
 
     // Sort
@@ -59,27 +69,43 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
         filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
         break;
       default:
-        filtered.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0));
+        filtered.sort(
+          (a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0),
+        );
     }
 
     return filtered;
-  }, [category, quickFilterCategory, priceRange, selectedFabrics, selectedColors, sortBy]);
+  }, [
+    category,
+    quickFilterCategory,
+    priceRange,
+    selectedFabrics,
+    selectedColors,
+    sortBy,
+  ]);
 
-  const categoryTitle = category === "all" ? "All Sarees" :
-    category === "wedding" ? "Wedding Collection" :
-    category === "festive" ? "Festive Elegance" :
-    category === "designer" ? "Designer Sarees" :
-    "Casual Wear";
+  const categoryTitle =
+    category === "all"
+      ? "All Sarees"
+      : category === "wedding"
+        ? "Wedding Collection"
+        : category === "festive"
+          ? "Festive Elegance"
+          : category === "designer"
+            ? "Designer Sarees"
+            : "Casual Wear";
 
   const toggleFabric = (fabric: string) => {
-    setSelectedFabrics(prev =>
-      prev.includes(fabric) ? prev.filter(f => f !== fabric) : [...prev, fabric]
+    setSelectedFabrics((prev) =>
+      prev.includes(fabric)
+        ? prev.filter((f) => f !== fabric)
+        : [...prev, fabric],
     );
   };
 
   const toggleColor = (color: string) => {
-    setSelectedColors(prev =>
-      prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]
+    setSelectedColors((prev) =>
+      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color],
     );
   };
 
@@ -87,27 +113,31 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
     {
       id: "wedding",
       name: "Wedding Collection",
-      image: "https://images.unsplash.com/photo-1633482218981-9ef4bdcae01b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWRkaW5nJTIwYnJpZGFsJTIwcmVkfGVufDF8fHx8MTc1OTU5MTA2M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      count: products.filter(p => p.category === "wedding").length
+      image:
+        "https://images.unsplash.com/photo-1633482218981-9ef4bdcae01b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWRkaW5nJTIwYnJpZGFsJTIwcmVkfGVufDF8fHx8MTc1OTU5MTA2M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      count: products.filter((p) => p.category === "wedding").length,
     },
     {
       id: "festive",
       name: "Festive Elegance",
-      image: "https://images.unsplash.com/photo-1759325349279-12f5cc1876b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZXN0aXZhbCUyMGNlbGVicmF0aW9uJTIwY29sb3JmdWx8ZW58MXx8fHwxNzU5NTEwMDA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      count: products.filter(p => p.category === "festive").length
+      image:
+        "https://images.unsplash.com/photo-1759325349279-12f5cc1876b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZXN0aXZhbCUyMGNlbGVicmF0aW9uJTIwY29sb3JmdWx8ZW58MXx8fHwxNzU5NTEwMDA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      count: products.filter((p) => p.category === "festive").length,
     },
     {
       id: "designer",
       name: "Designer Sarees",
-      image: "https://images.unsplash.com/photo-1759563874711-b026ac0b6c6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ25lciUyMGZhc2hpb24lMjBsdXh1cnl8ZW58MXx8fHwxNzU5NTkxMDY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      count: products.filter(p => p.category === "designer").length
+      image:
+        "https://images.unsplash.com/photo-1759563874711-b026ac0b6c6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ25lciUyMGZhc2hpb24lMjBsdXh1cnl8ZW58MXx8fHwxNzU5NTkxMDY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      count: products.filter((p) => p.category === "designer").length,
     },
     {
       id: "casual",
       name: "Casual Wear",
-      image: "https://images.unsplash.com/photo-1741847639057-b51a25d42892?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXN1YWwlMjBjb3R0b24lMjBmYWJyaWN8ZW58MXx8fHwxNzU5NTkxMDY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      count: products.filter(p => p.category === "casual").length
-    }
+      image:
+        "https://images.unsplash.com/photo-1741847639057-b51a25d42892?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXN1YWwlMjBjb3R0b24lMjBmYWJyaWN8ZW58MXx8fHwxNzU5NTkxMDY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      count: products.filter((p) => p.category === "casual").length,
+    },
   ];
 
   return (
@@ -140,10 +170,14 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
               {categoryFilters.map((cat) => (
                 <div
                   key={cat.id}
-                  onClick={() => setQuickFilterCategory(quickFilterCategory === cat.id ? null : cat.id)}
+                  onClick={() =>
+                    setQuickFilterCategory(
+                      quickFilterCategory === cat.id ? null : cat.id,
+                    )
+                  }
                   className={`relative group cursor-pointer rounded-lg overflow-hidden h-48 transition-all ${
-                    quickFilterCategory === cat.id 
-                      ? "ring-2 ring-primary ring-offset-2" 
+                    quickFilterCategory === cat.id
+                      ? "ring-2 ring-primary ring-offset-2"
                       : "hover:ring-2 hover:ring-primary/50"
                   }`}
                 >
@@ -160,8 +194,16 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
                   </div>
                   {quickFilterCategory === cat.id && (
                     <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                   )}
@@ -173,7 +215,9 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
 
         <div className="flex gap-8">
           {/* Filters Sidebar */}
-          <aside className={`${showFilters ? 'w-64' : 'w-0'} flex-shrink-0 transition-all duration-300 overflow-hidden`}>
+          <aside
+            className={`${showFilters ? "w-64" : "w-0"} flex-shrink-0 transition-all duration-300 overflow-hidden`}
+          >
             <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg">Filters</h3>
@@ -192,8 +236,8 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
                   className="mb-2"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>₹{priceRange[0]}</span>
-                  <span>₹{priceRange[1]}</span>
+                  <span>€{priceRange[0]}</span>
+                  <span>€{priceRange[1]}</span>
                 </div>
               </div>
 
@@ -201,14 +245,17 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
               <div className="mb-6">
                 <Label className="mb-3 block">Fabric</Label>
                 <div className="space-y-2">
-                  {fabrics.map(fabric => (
+                  {fabrics.map((fabric) => (
                     <div key={fabric} className="flex items-center gap-2">
                       <Checkbox
                         id={`fabric-${fabric}`}
                         checked={selectedFabrics.includes(fabric)}
                         onCheckedChange={() => toggleFabric(fabric)}
                       />
-                      <label htmlFor={`fabric-${fabric}`} className="text-sm cursor-pointer">
+                      <label
+                        htmlFor={`fabric-${fabric}`}
+                        className="text-sm cursor-pointer"
+                      >
                         {fabric}
                       </label>
                     </div>
@@ -220,14 +267,17 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
               <div className="mb-6">
                 <Label className="mb-3 block">Color</Label>
                 <div className="space-y-2">
-                  {colors.map(color => (
+                  {colors.map((color) => (
                     <div key={color} className="flex items-center gap-2">
                       <Checkbox
                         id={`color-${color}`}
                         checked={selectedColors.includes(color)}
                         onCheckedChange={() => toggleColor(color)}
                       />
-                      <label htmlFor={`color-${color}`} className="text-sm cursor-pointer">
+                      <label
+                        htmlFor={`color-${color}`}
+                        className="text-sm cursor-pointer"
+                      >
                         {color}
                       </label>
                     </div>
@@ -274,8 +324,12 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
                   <SelectContent>
                     <SelectItem value="popular">Popular</SelectItem>
                     <SelectItem value="new">New Arrivals</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="price-low">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-high">
+                      Price: High to Low
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -284,13 +338,33 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
             {/* Products */}
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map(product => (
-                  <ProductCard key={product.id} {...product} />
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    productName={product.name}
+                    productSellingPrice={product.price}
+                    productMrp={product.originalPrice}
+                    productImages={product.images || [product.image]}
+                    productBestSeller={product.isBestseller}
+                    productFabricType={product.fabric}
+                    productDiscount={
+                      product.originalPrice
+                        ? Math.round(
+                            ((product.originalPrice - product.price) /
+                              product.originalPrice) *
+                              100,
+                          )
+                        : 0
+                    }
+                  />
                 ))}
               </div>
             ) : (
               <div className="text-center py-20">
-                <p className="text-muted-foreground">No products found matching your filters.</p>
+                <p className="text-muted-foreground">
+                  No products found matching your filters.
+                </p>
                 <Button
                   variant="outline"
                   className="mt-4"
