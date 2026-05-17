@@ -169,10 +169,10 @@ export function ProductDetailPage({
           {/* RIGHT SIDE */}
           <div>
             <div className="flex gap-2 mb-4">
-              {product.productBestSeller && (
+              {product.productBadges?.includes("New") && (
                 <Badge className="bg-red-500">New</Badge>
               )}
-              {product.productBestSeller && (
+              {product.productBadges?.includes("Bestseller") && (
                 <Badge className="bg-yellow-500 text-secondary-foreground">
                   Bestseller
                 </Badge>
@@ -318,6 +318,39 @@ export function ProductDetailPage({
               </Button>
             </div>
 
+            <div className="grid sm:grid-cols-2 gap-6 pb-8">
+              <div className="border rounded-2xl p-5">
+                <p className="text-muted-foreground">Brand</p>
+
+                <p className="font-medium">{product.productBrand}</p>
+              </div>
+
+              <div className="border rounded-2xl p-5">
+                <p className="text-muted-foreground">Color</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">{product.productColor} </p>
+                  <p
+                    className="inline-flex h-4.5 w-4.5 rounded-full"
+                    style={{ backgroundColor: product.productColorCode }}
+                  ></p>
+                </div>
+              </div>
+
+              <div className="border rounded-2xl p-5">
+                <p className="text-muted-foreground">Fabric</p>
+
+                <p className="font-medium">{product.productFabricType}</p>
+              </div>
+
+              <div className="border rounded-2xl p-5">
+                <p className="text-muted-foreground">Occasion</p>
+
+                <p className="font-medium">
+                  {product.productOccasion.join(", ")}
+                </p>
+              </div>
+            </div>
+
             {/* FEATURES */}
             <div className="space-y-5 border-t pt-6">
               <div className="flex gap-4">
@@ -437,7 +470,7 @@ export function ProductDetailPage({
                   productSellingPrice={item.productSellingPrice}
                   productMrp={item.productMrp}
                   productImages={item.productImages}
-                  productBestSeller={item.productBestSeller}
+                  productBadges={item.productBadges}
                   productFabricType={item.productFabricType}
                   productDiscount={item.productDiscount}
                 />

@@ -16,7 +16,7 @@ interface ProductCardProps {
 
   productImages: string[];
 
-  productBestSeller?: boolean;
+  productBadges?: string[];
 
   productFabricType?: string;
   productDiscount: number;
@@ -28,7 +28,7 @@ export function ProductCard({
   productSellingPrice,
   productMrp,
   productImages,
-  productBestSeller,
+  productBadges,
   productFabricType,
   productDiscount,
 }: ProductCardProps) {
@@ -68,7 +68,7 @@ export function ProductCard({
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {productBestSeller && (
+          {productBadges?.includes("Bestseller") && (
             <Badge className="bg-secondary text-secondary-foreground">
               Bestseller
             </Badge>
@@ -80,10 +80,9 @@ export function ProductCard({
         {/* Quick Actions */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            className="bg-white p-2 rounded-full shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors"
-            title=""
+            className="bg-white p-2 rounded-full shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors cursor-crosshair"
+            title="wishlist"
           >
-            tit
             <Heart className="h-4 w-4" />
           </button>
         </div>

@@ -115,7 +115,7 @@ export function Header() {
               Home
             </button>
             <button
-              onClick={() => navigate("category", { category: "all" })}
+              onClick={() => navigate("category", { category: "womens-collections" })}
               className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
             >
               Womens Collections

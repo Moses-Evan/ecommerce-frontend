@@ -23,7 +23,9 @@ export interface Product {
 
   productStock: number;
 
-  productBestSeller: boolean;
+  productCategory: string;
+
+  productBadges: string[];
 
   productColorCode: string;
   productSubType: string;
