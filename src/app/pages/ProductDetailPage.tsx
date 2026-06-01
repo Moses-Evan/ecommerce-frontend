@@ -112,8 +112,8 @@ export function ProductDetailPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* LEFT SIDE */}
-          <div>
-            {/* MAIN IMAGE */}
+          {/* <div>
+            MAIN IMAGE
             <div className="flex-1">
               <div className="relative overflow-hidden rounded-3xl  aspect-[3/4] mb-6 ">
                 {discount > 0 && (
@@ -143,7 +143,7 @@ export function ProductDetailPage({
                 </AnimatePresence>
               </div>
 
-              {/* THUMBNAILS */}
+              THUMBNAILS
               <div className="grid grid-cols-4 gap-2">
                 {product.productImages.map((img: string, idx: number) => (
                   <div
@@ -162,6 +162,46 @@ export function ProductDetailPage({
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+          </div> */}
+          <div className="flex gap-4">
+            {/* THUMBNAILS */}
+            <div className="flex flex-col gap-3">
+              {product.productImages.map((img: string, idx: number) => (
+                <div
+                  key={idx}
+                  onClick={() => setSelectedImage(idx)}
+                  className={`w-20 h-24 rounded-xl overflow-hidden border-2 cursor-pointer hover:bg-accent/90 ${
+                    selectedImage === idx ? "border-primary" : "border-border "
+                  }`}
+                >
+                  <ImageWithFallback
+                    src={img}
+                    alt={`thumb-${idx}`}
+                    className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* MAIN IMAGE */}
+            <div className="flex-1">
+              <div className="relative overflow-hidden rounded-3xl bg-muted aspect-[3/4]">
+                {discount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute top-4 left-4 z-10"
+                  >
+                    {discount}% OFF
+                  </Badge>
+                )}
+
+                <ImageWithFallback
+                  src={product.productImages[selectedImage]}
+                  alt={product.productName}
+                  className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                />
               </div>
             </div>
           </div>
