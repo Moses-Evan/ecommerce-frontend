@@ -1,6 +1,9 @@
 import { ShoppingCart, Search, Menu, Heart, User } from "lucide-react";
+import { useState } from "react";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useCart } from "../contexts/CartContext";
+import { CollectionGroupDropdown } from "./CategoryDropdown";
+import { categories } from "../../data/categories";
 import {
   Sheet,
   SheetTrigger,
@@ -10,20 +13,17 @@ import {
   SheetClose,
 } from "./ui/sheet";
 
-
-
 export function Header() {
-  const { navigate, currentPage } = useNavigation();
+  const { navigate, page } = useNavigation();
   const { totalItems } = useCart();
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
       {/* Top Bar */}
       <div className="bg-primary text-primary-foreground py-2">
         <div className="container mx-auto px-4 flex justify-center items-center gap-4">
-          <p className="text-sm">
-            Free Shipping on Orders Above 200€
-          </p>
+          <p className="text-sm">Free Shipping on Orders Above 200€</p>
         </div>
       </div>
 
@@ -45,31 +45,67 @@ export function Header() {
                 <SheetClose asChild>
                   <button
                     onClick={() => navigate("home")}
-                    className={`text-foreground text-left hover:text-primary transition-colors ${currentPage === "home" ? "text-primary" : ""}`}
+                    className={`text-foreground text-left hover:text-primary transition-colors ${page === "home" ? "text-primary" : ""}`}
                   >
                     Home
                   </button>
                 </SheetClose>
-                <SheetClose asChild>
+
+                {/* Mobile Collections Dropdown */}
+                <div className="border-t border-border pt-3">
                   <button
-                    onClick={() => navigate("category", { category: "all" })}
-                    className={`text-foreground text-left hover:text-primary transition-colors ${currentPage === "category" ? "text-primary" : ""}`}
+                    onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+                    className={`text-foreground text-left hover:text-primary transition-colors flex items-center justify-between w-full ${page === "category" ? "text-primary" : ""}`}
                   >
                     Collections
+                    <span
+                      className={`transform transition-transform ${mobileDropdownOpen ? "rotate-180" : ""}`}
+                    >
+                      ▼
+                    </span>
                   </button>
-                </SheetClose>
+
+                  {mobileDropdownOpen && (
+                    <div className="mt-3 ml-4 space-y-4 pb-3 border-b border-border">
+                      {categories.map((group: any) => (
+                        <div key={group.name}>
+                          <h4 className="text-xs font-semibold text-primary uppercase tracking-wide mb-2">
+                            {group.name}
+                          </h4>
+                          <div className="space-y-2">
+                            {group.items.map((item: any) => (
+                              <SheetClose key={item.id} asChild>
+                                <button
+                                  onClick={() =>
+                                    navigate("category", { category: item.id })
+                                  }
+                                  className="block text-sm text-foreground/80 hover:text-primary transition-colors"
+                                >
+                                  {item.name}
+                                </button>
+                              </SheetClose>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <SheetClose asChild>
                   <button
-                    onClick={() => navigate("about")}
-                    className={`text-foreground text-left hover:text-primary transition-colors ${currentPage === "about" ? "text-primary" : ""}`}
+                    onClick={() =>
+                      navigate("category", { category: "accessories" })
+                    }
+                    className={`text-foreground text-left hover:text-primary transition-colors ${page === "category" ? "text-primary" : ""}`}
                   >
-                    About Us
+                    Accessories
                   </button>
                 </SheetClose>
                 <SheetClose asChild>
                   <button
                     onClick={() => navigate("contact")}
-                    className={`text-foreground text-left hover:text-primary transition-colors ${currentPage === "contact" ? "text-primary" : ""}`}
+                    className={`text-foreground text-left hover:text-primary transition-colors ${page === "contact" ? "text-primary" : ""}`}
                   >
                     Contact
                   </button>
@@ -102,7 +138,7 @@ export function Header() {
             {/* <h1 className="text-3xl text-primary tracking-tight">Niorra</h1> */}
             <div className="text-3xl text-primary tracking-tight flex items-center gap-2">
               <img src="src\images\logo-icon.png" width={80} alt="" />
-              <h1 style={{ color: "#b30220" }}>NIORRA</h1>
+              <h1 className="text-niorra-red">NIORRA</h1>
             </div>
           </div>
 
@@ -110,43 +146,26 @@ export function Header() {
           <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center">
             <button
               onClick={() => navigate("home")}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "home" ? "text-primary" : ""}`}
+              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${page === "home" ? "text-primary" : ""}`}
             >
               Home
             </button>
+            {categories.map((group: any) => (
+              <CollectionGroupDropdown
+                key={group.name}
+                groupName={group.name}
+                items={group.items}
+              />
+            ))}
             <button
-              onClick={() => navigate("category", { category: "womens-collections" })}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
-            >
-              Womens Collections
-            </button>
-            <button
-              onClick={() => navigate("category", { category: "all" })}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
-            >
-              Mens Collections
-            </button>
-            <button
-              onClick={() => navigate("category", { category: "all" })}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
-            >
-              Kids Collections
-            </button>
-            <button
-              onClick={() => navigate("category", { category: "all" })}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "category" ? "text-primary" : ""}`}
+              onClick={() => navigate("category", { category: "accessories" })}
+              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${page === "category" ? "text-primary" : ""}`}
             >
               Accessories
             </button>
-            {/* <button
-              onClick={() => navigate("about")}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "about" ? "text-primary" : ""}`}
-            >
-              About Us
-            </button> */}
             <button
               onClick={() => navigate("contact")}
-              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${currentPage === "contact" ? "text-primary" : ""}`}
+              className={`text-foreground hover:text-primary transition-colors cursor-pointer ${page === "contact" ? "text-primary" : ""}`}
             >
               Contact
             </button>
@@ -154,14 +173,21 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <button className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer">
+            <button
+              aria-label="Search products"
+              className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
+            >
               <Search className="h-5 w-5" />
             </button>
-            <button className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer">
+            <button
+              aria-label="View wishlist"
+              className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
+            >
               <Heart className="h-5 w-5" />
             </button>
             <button
               onClick={() => navigate("account")}
+              aria-label="View account"
               className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
             >
               <User className="h-5 w-5" />

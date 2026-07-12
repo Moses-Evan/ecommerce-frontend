@@ -56,7 +56,7 @@ export function ProductCard({
   return (
     <div
       onClick={() => navigate("product", { productId: id })}
-      className="group relative bg-card rounded-lg overflow-hidden border border-border hover:shadow-xl transition-all duration-300 cursor-pointer"
+      className="group relative bg-card rounded-[1.3rem] overflow-hidden border border-border hover:shadow-xl transition-all duration-300 cursor-pointer"
     >
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-muted">
@@ -67,7 +67,7 @@ export function ProductCard({
         />
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
+        <div className="absolute top-5 left-5 flex flex-col gap-2">
           {productBadges?.includes("Bestseller") && (
             <Badge className="bg-secondary text-secondary-foreground">
               Bestseller
@@ -91,7 +91,7 @@ export function ProductCard({
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform">
           <Button
             onClick={handleAddToCart}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            className="w-full mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
             Add to Cart

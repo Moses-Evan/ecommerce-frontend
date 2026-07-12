@@ -39,9 +39,9 @@ export function ContactPage() {
             </div>
             <h3 className="text-lg mb-2">Visit Us</h3>
             <p className="text-sm text-muted-foreground">
-              123 Silk Street<br />
-              Mumbai, Maharashtra<br />
-              400001, India
+              Ludwigstr.19<br />
+              60327 <br />
+              Frankfurt Germany
             </p>
           </div>
 
@@ -53,8 +53,8 @@ export function ContactPage() {
             </div>
             <h3 className="text-lg mb-2">Call Us</h3>
             <p className="text-sm text-muted-foreground">
-              +91 98765 43210<br />
-              +91 98765 43211<br />
+             0049 069 2713 3944<br />
+          
               Mon-Sat, 10 AM - 7 PM
             </p>
           </div>
@@ -67,9 +67,8 @@ export function ContactPage() {
             </div>
             <h3 className="text-lg mb-2">Email Us</h3>
             <p className="text-sm text-muted-foreground">
-              hello@draupadivastralya.com<br />
-              support@draupadivastralya.com<br />
-              24/7 Support
+             hello@niorra.com
+        
             </p>
           </div>
         </div>
@@ -188,7 +187,7 @@ export function ContactPage() {
               <div className="text-center">
                 <MapPin className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-muted-foreground">Map Location</p>
-                <p className="text-sm text-muted-foreground">123 Silk Street, Mumbai</p>
+                <p className="text-sm text-muted-foreground">Ludwigstr.19 60327 Frankfurt Germany</p>
               </div>
             </div>
           </div>

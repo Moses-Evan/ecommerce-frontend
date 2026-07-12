@@ -4,21 +4,21 @@ import { Card, CardContent } from "./ui/card";
 const testimonials = [
   {
     name: "Priya Sharma",
-    location: "Mumbai",
+    location: "Frankfurt, Germany",
     rating: 5,
     text: "Absolutely stunning collection! The quality of the silk saree I purchased exceeded my expectations. The intricate zari work is exquisite.",
     date: "2 weeks ago"
   },
   {
     name: "Ananya Reddy",
-    location: "Hyderabad",
+    location: "Frankfurt, Germany",
     rating: 5,
     text: "Perfect for my wedding! The bridal collection is breathtaking. Customer service was exceptional and delivery was prompt.",
     date: "1 month ago"
   },
   {
     name: "Meera Patel",
-    location: "Ahmedabad",
+    location: "Frankfurt, Germany",
     rating: 5,
     text: "I've ordered multiple sarees and each one is more beautiful than the last. The attention to detail and traditional craftsmanship is remarkable.",
     date: "3 weeks ago"

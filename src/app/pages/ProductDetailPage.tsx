@@ -23,7 +23,7 @@ import {
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ProductCard } from "../components/ProductCard";
 import { useCart } from "../contexts/CartContext";
-import { getProductById } from "../../api/productApi";
+import { getAllProducts, getProductById } from "../../api/productApi";
 import { Product } from "../../types/Product";
 
 interface ProductDetailPageProps {
@@ -33,11 +33,45 @@ interface ProductDetailPageProps {
 
 const sizes = ["XS", "S", "M", "L", "XL"];
 
+const normalizeProductField = (value?: string) =>
+  value
+    ?.toLowerCase()
+    .trim()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "";
+
+const getRelatedProducts = (currentProduct: Product, products: Product[]) => {
+  const currentCategoryKeys = [
+    normalizeProductField(currentProduct.productCategory),
+    normalizeProductField(currentProduct.productType),
+    normalizeProductField(currentProduct.productSubType),
+  ].filter(Boolean);
+
+  const otherProducts = products.filter((item) => item.id !== currentProduct.id);
+
+  const categoryMatches = otherProducts.filter((item) =>
+    [
+      normalizeProductField(item.productCategory),
+      normalizeProductField(item.productType),
+      normalizeProductField(item.productSubType),
+    ].some((key) => currentCategoryKeys.includes(key)),
+  );
+
+  return (categoryMatches.length > 0 ? categoryMatches : otherProducts).slice(
+    0,
+    4,
+  );
+};
+
 export function ProductDetailPage({
   productId,
   relatedProducts = [],
 }: ProductDetailPageProps) {
   const [product, setProduct] = useState<Product | null>(null);
+  const [fetchedRelatedProducts, setFetchedRelatedProducts] = useState<
+    Product[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -49,9 +83,14 @@ export function ProductDetailPage({
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const productData = await getProductById(productId);
+        const [productData, allProducts] = await Promise.all([
+          getProductById(productId),
+          getAllProducts(),
+        ]);
         // productData.productBestSeller = true;
         setProduct(productData);
+        setSelectedImage(0);
+        setFetchedRelatedProducts(getRelatedProducts(productData, allProducts));
       } catch (error) {
         console.error("Error fetching product:", error);
       } finally {
@@ -86,6 +125,8 @@ export function ProductDetailPage({
   }
 
   const discount = product.productDiscount || 0;
+  const productsToShow =
+    relatedProducts.length > 0 ? relatedProducts : fetchedRelatedProducts;
 
   const handleAddToCart = () => {
     addItem({
@@ -432,7 +473,7 @@ export function ProductDetailPage({
           </div>
         </div>
 
-        {/* TABS */}
+        {/* TABS
         <div className="mt-20">
           <Tabs defaultValue="description">
             <TabsList className="mb-8">
@@ -494,15 +535,15 @@ export function ProductDetailPage({
               </div>
             </TabsContent>
           </Tabs>
-        </div>
+        </div> */}
 
         {/* RELATED PRODUCTS */}
-        {relatedProducts.length > 0 && (
+        {productsToShow.length > 0 && (
           <div className="mt-24">
             <h2 className="text-3xl font-semibold mb-8">Related Products</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((item) => (
+              {productsToShow.map((item) => (
                 <ProductCard
                   key={item.id}
                   id={item.id}
