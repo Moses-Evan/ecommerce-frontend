@@ -1,6 +1,11 @@
+import { useEffect, useState } from "react";
 import { Package, Heart, MapPin, User, LogOut } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { ProductCard } from "../components/ProductCard";
+import { getAllProducts } from "../../api/productApi";
+import { Product } from "../../types/Product";
 import { useNavigation } from "../contexts/NavigationContext";
+import { useWishlist } from "../contexts/WishlistContext";
 import {
   Tabs,
   TabsContent,
@@ -11,7 +16,21 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 
 export function AccountPage() {
-  const { navigate } = useNavigation();
+  const { navigate, params } = useNavigation();
+  const { productIds } = useWishlist();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getAllProducts()
+      .then(setProducts)
+      .catch((error) =>
+        console.error("Error loading wishlist products:", error),
+      );
+  }, []);
+
+  const wishlistProducts = products.filter((product) =>
+    productIds.includes(String(product.id)),
+  );
 
   const orders = [
     {
@@ -79,7 +98,9 @@ export function AccountPage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <Tabs defaultValue="orders">
+            <Tabs
+              defaultValue={params.tab === "wishlist" ? "wishlist" : "orders"}
+            >
               <TabsList className="mb-6">
                 <TabsTrigger value="orders">Orders</TabsTrigger>
                 <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
@@ -130,19 +151,37 @@ export function AccountPage() {
               </TabsContent>
 
               <TabsContent value="wishlist">
-                <div className="text-center py-12">
-                  <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    Your wishlist is empty
-                  </p>
-                  <Button
-                    onClick={() => navigate("category", { category: "all" })}
-                    variant="outline"
-                    className="mt-4"
-                  >
-                    Browse Products
-                  </Button>
-                </div>
+                {wishlistProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {wishlistProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        productName={product.productName}
+                        productSellingPrice={product.productSellingPrice}
+                        productMrp={product.productMrp}
+                        productImages={product.productImages}
+                        productBadges={product.productBadges}
+                        productFabricType={product.productFabricType}
+                        productDiscount={product.productDiscount}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground">
+                      Your wishlist is empty
+                    </p>
+                    <Button
+                      onClick={() => navigate("category", { category: "all" })}
+                      variant="outline"
+                      className="mt-4"
+                    >
+                      Browse Products
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="addresses">

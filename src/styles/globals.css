@@ -1,7 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@100..900&family=Noto+Serif+Devanagari:wght@400..900&display=swap");
 
 @custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: "Algerian";
+  src: url("src/fonts/Algerian Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ranade";
+  src: url("src/fonts/Ranade-Variable.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zodiak";
+  src: url("src/fonts/Zodiak-Variable.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --font-size: 16px;
@@ -192,7 +213,7 @@ html {
 }
 
 body {
-  font-family: "Noto Sans", sans-serif;
+  font-family: "Ranade", sans-serif;
 }
 
 h1,
@@ -201,27 +222,214 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Playfair Display", serif;
+  font-family: "Ranade", sans-serif;
 }
 
 @keyframes page-fade-in {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes niorra-gold-sheen {
+  from {
+    transform: translateX(-160%);
+  }
+  to {
+    transform: translateX(460%);
+  }
+}
+
+@keyframes niorra-jewel-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: rotate(45deg) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) scale(1.25);
+  }
+}
+
+@keyframes niorra-heart-glow {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes niorra-wishlist-removing {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+}
+
+@keyframes niorra-badge-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes niorra-silk-drift {
+  0%,
+  100% {
+    filter: saturate(1);
+  }
+  50% {
+    filter: saturate(1.06) brightness(1.02);
+  }
+}
+
+@keyframes niorra-detail-silk {
+  0%,
+  100% {
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    filter: saturate(1.08) brightness(1.03);
+  }
+}
+
+.niorra-gold-sheen {
+  animation: niorra-gold-sheen 5s ease-in-out infinite;
+}
+
+.niorra-jewel-pulse {
+  animation: niorra-jewel-pulse 2.4s ease-in-out infinite;
+}
+
+.niorra-heart-glow {
+  animation: niorra-heart-glow 1.8s ease-in-out infinite;
+}
+
+.niorra-wishlist-removing {
+  animation: niorra-wishlist-removing 280ms ease-in both;
+  pointer-events: none;
+}
+
+.niorra-badge-reveal {
+  animation: niorra-badge-reveal 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.niorra-silk-drift {
+  animation: niorra-silk-drift 6s ease-in-out infinite;
+}
+
+.niorra-detail-silk {
+  animation: niorra-detail-silk 3s ease-in-out infinite;
+}
+
+.niorra-detail-frame::after {
+  position: absolute;
+  inset: 10px;
+  pointer-events: none;
+  border: 1px solid rgba(201, 160, 80, 0.45);
+  border-radius: 1.25rem;
+  content: "";
+  opacity: 0.7;
+}
+
+@media (min-width: 1536px) and (max-height: 1200px) {
+  .niorra-detail-frame {
+    width: auto !important;
+    height: calc(100svh - 17rem) !important;
+  }
+}
+
+.niorra-heritage-rail {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(201, 160, 80, 0.22) 1px,
+    transparent 0
+  );
+  background-size: 8px 8px;
+}
+
+.niorra-heritage-mark {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border: 1px solid var(--secondary);
+  transform: rotate(45deg);
+}
+
+.niorra-heritage-mark::after {
+  position: absolute;
+  inset: 1px;
+  border: 1px solid var(--secondary);
+  content: "";
+}
+
+.niorra-card-frame::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  background: linear-gradient(
+      120deg,
+      transparent 35%,
+      rgba(201, 160, 80, 0.4),
+      transparent 65%
+    )
+    border-box;
+  opacity: 0;
+  content: "";
+  transition: opacity 400ms ease;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.niorra-card-frame:hover::after {
+  opacity: 1;
+}
+
+.niorra-card-reveal {
+  animation: page-fade-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .niorra-gold-sheen,
+  .niorra-jewel-pulse,
+  .niorra-heart-glow,
+  .niorra-card-reveal,
+  .niorra-badge-reveal,
+  .niorra-silk-drift,
+  .niorra-detail-silk,
+  .niorra-heritage-mark {
+    animation: none;
   }
 }
 
 @layer base {
   .page-transition {
     animation: page-fade-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
   }
+}
 
-  .text-niorra-red {
-    color: #b30220;
-  }
+.text-niorra-red {
+  font-family: "Algerian", sans-serif;
+  color: #b30220;
 }

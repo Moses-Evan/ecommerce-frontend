@@ -23,6 +23,7 @@ import {
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ProductCard } from "../components/ProductCard";
 import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext";
 import { getAllProducts, getProductById } from "../../api/productApi";
 import { Product } from "../../types/Product";
 
@@ -48,7 +49,9 @@ const getRelatedProducts = (currentProduct: Product, products: Product[]) => {
     normalizeProductField(currentProduct.productSubType),
   ].filter(Boolean);
 
-  const otherProducts = products.filter((item) => item.id !== currentProduct.id);
+  const otherProducts = products.filter(
+    (item) => item.id !== currentProduct.id,
+  );
 
   const categoryMatches = otherProducts.filter((item) =>
     [
@@ -78,6 +81,7 @@ export function ProductDetailPage({
   const [selectedSize, setSelectedSize] = useState("M");
 
   const { addItem } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -139,6 +143,8 @@ export function ProductDetailPage({
     });
   };
 
+  const isWishlisted = isInWishlist(product.id);
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 py-8">
@@ -151,7 +157,7 @@ export function ProductDetailPage({
           <span className="text-foreground">{product.productName}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div className="mb-16 grid grid-cols-1 items-start gap-10 lg:flex lg:gap-12">
           {/* LEFT SIDE */}
           {/* <div>
             MAIN IMAGE
@@ -206,49 +212,65 @@ export function ProductDetailPage({
               </div>
             </div>
           </div> */}
-          <div className="flex gap-4">
-            {/* THUMBNAILS */}
-            <div className="flex flex-col gap-3">
-              {product.productImages.map((img: string, idx: number) => (
-                <div
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`w-20 h-24 rounded-xl overflow-hidden border-2 cursor-pointer hover:bg-accent/90 ${
-                    selectedImage === idx ? "border-primary" : "border-border "
-                  }`}
-                >
-                  <ImageWithFallback
-                    src={img}
-                    alt={`thumb-${idx}`}
-                    className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* MAIN IMAGE */}
-            <div className="flex-1">
-              <div className="relative overflow-hidden rounded-3xl bg-muted aspect-[3/4]">
-                {discount > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute top-4 left-4 z-10"
+          <div className="min-h-0 w-full min-w-0 lg:flex-[1.08] lg:self-start">
+            <div className="flex min-h-0 w-full min-w-0 gap-4 lg:sticky lg:top-40 lg:self-start">
+              {/* THUMBNAILS */}
+              <div className="flex flex-col gap-3">
+                {product.productImages.map((img: string, idx: number) => (
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`w-20 h-24 rounded-xl overflow-hidden border-2 cursor-pointer hover:bg-accent/90 ${
+                      selectedImage === idx
+                        ? "border-primary"
+                        : "border-border "
+                    }`}
                   >
-                    {discount}% OFF
-                  </Badge>
-                )}
+                    <ImageWithFallback
+                      src={img}
+                      alt={`thumb-${idx}`}
+                      className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
 
-                <ImageWithFallback
-                  src={product.productImages[selectedImage]}
-                  alt={product.productName}
-                  className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-                />
+              {/* MAIN IMAGE */}
+              <div className="min-w-0 flex-1 md:flex-none lg:flex-none 2xl:flex-1">
+                <div className="niorra-detail-frame relative aspect-[3/4] min-h-[320px] w-full overflow-hidden rounded-3xl bg-muted md:h-[calc(100svh-17rem)] md:w-auto 2xl:h-auto 2xl:w-full">
+                  {discount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute top-4 left-4 z-10"
+                    >
+                      {discount}% OFF
+                    </Badge>
+                  )}
+
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={product.productImages[selectedImage]}
+                      initial={{ opacity: 0, scale: 1.04 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute inset-0"
+                    >
+                      <ImageWithFallback
+                        src={product.productImages[selectedImage]}
+                        alt={product.productName}
+                        className="h-full w-full cursor-pointer object-contain niorra-detail-silk"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
+            <div className="hidden h-112 lg:block" aria-hidden="true" />
           </div>
 
           {/* RIGHT SIDE */}
-          <div>
+          <div className="min-w-0 lg:flex-[0.92] lg:border-l lg:border-border lg:pl-10 lg:pt-2">
             <div className="flex gap-2 mb-4">
               {product.productBadges?.includes("New") && (
                 <Badge className="bg-red-500">New</Badge>
@@ -290,7 +312,7 @@ export function ProductDetailPage({
                         <span className="text-foreground">Hurry up!</span>
                         <motion.span
                           animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 1.2, repeat: Infinity }}
+                          transition={{ duration: 0.7, repeat: Infinity }}
                           className="inline-flex h-2.5 w-2.5 rounded-full bg-accent"
                         />
                       </div>
@@ -310,7 +332,7 @@ export function ProductDetailPage({
                             animate={{
                               width: `${Math.max(1, product.productStock) * 10}%`,
                             }}
-                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
                             className="h-full rounded-full bg-gradient-to-r from-primary to-rose-500"
                           />
                         </div>
@@ -383,15 +405,26 @@ export function ProductDetailPage({
             <div className="flex gap-3 mb-8">
               <Button
                 size="lg"
-                className="flex-1 h-14"
+                className="mt-0 h-14 flex-1"
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Add To Cart
               </Button>
 
-              <Button variant="outline" size="lg" className="h-14 w-14">
-                <Heart className="w-5 h-5" />
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-14 w-14"
+                onClick={() => toggleWishlist(product.id)}
+                aria-label={
+                  isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+                }
+                aria-pressed={isWishlisted}
+              >
+                <Heart
+                  className={`w-5 h-5 ${isWishlisted ? "fill-current text-primary" : ""}`}
+                />
               </Button>
 
               <Button variant="outline" size="lg" className="h-14 w-14">

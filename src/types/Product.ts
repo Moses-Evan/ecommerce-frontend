@@ -30,6 +30,6 @@ export interface Product {
   productColorCode: string;
   productSubType: string;
   productType: string;
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt: string;
+  createdAt: string;
 }

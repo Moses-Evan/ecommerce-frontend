@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProductCard } from "../components/ProductCard";
-import { categories, allCategories } from "../../data/categories";
+import {
+  categories,
+  allCategories,
+  productOccasions,
+} from "../data/categories";
 import { Filter, SlidersHorizontal } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -16,17 +20,20 @@ import { Slider } from "../components/ui/slider";
 import { Badge } from "../components/ui/badge";
 import { getAllProducts } from "../../api/productApi";
 import { Product } from "../../types/Product";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigation } from "../contexts/NavigationContext";
 
 interface CategoryPageProps {
   category?: string;
+  occasion?: string;
+  priceMin?: number;
+  priceMax?: number;
 }
 
 // Category title mapping
 const categoryTitleMap: Record<string, string> = {
-  "sarees": "All Sarees",
-  "lehenga": "Lehenga",
+  sarees: "All Sarees",
+  lehenga: "Lehenga",
   "festive-collections": "Festive Collections",
   "cotton-sarees": "Cotton Sarees",
   "blouse-collections": "Blouse Collections",
@@ -34,7 +41,7 @@ const categoryTitleMap: Record<string, string> = {
   "traditional-kurtas": "Traditional Kurtas",
   "daily-wear-dresses": "Daily Wear Dresses - Nighty, Inners",
   "half-sarees": "Half Sarees",
-  "skirts": "Skirts",
+  skirts: "Skirts",
   "sherwani-suit": "Sherwani Suit",
   "wedding-shirt": "Wedding Shirt",
   "pattu-pavadai": "Pattu Pavadai",
@@ -52,6 +59,10 @@ const normalizeCategory = (value?: string) =>
     .replace(/^-+|-+$/g, "") || "";
 
 const categoryAliases: Record<string, string[]> = {
+  "all-women-collections": ["women"],
+  "all-men-collections": ["men"],
+  "all-kids-girls-collections": ["kids", "girls"],
+  "all-kids-boys-collections": ["kids", "boys"],
   sarees: ["saree"],
   lehenga: ["lehenga", "lehengas"],
   "blouse-collections": ["blouse", "blouses", "blouse-collection"],
@@ -76,51 +87,6 @@ const categoryAliases: Record<string, string[]> = {
     "dupattas",
   ],
 };
-
-const sareeOccasions = [
-  {
-    id: "all",
-    label: "All",
-    style: "Every saree edit",
-    image:
-      "https://images.unsplash.com/photo-1610189019496-13e6e7cbbc40?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: "wedding",
-    label: "Wedding",
-    style: "Indian bridal",
-    image:
-      "https://images.unsplash.com/photo-1688789913221-071a44294edf?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: "festive",
-    label: "Festive",
-    style: "Modern celebration",
-    image:
-      "https://images.unsplash.com/photo-1756483571456-6fa86cb1ae53?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: "ceremonies",
-    label: "Ceremonies",
-    style: "Indian rituals",
-    image:
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: "traditional",
-    label: "Traditional",
-    style: "Classic drapes",
-    image:
-      "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: "casual",
-    label: "Casual",
-    style: "Everyday modern",
-    image:
-      "https://images.unsplash.com/photo-1692107271822-50cc09b2bf73?auto=format&fit=crop&w=1000&q=80",
-  },
-];
 
 const occasionAliases: Record<string, string[]> = {
   ceremonies: ["ceremony", "ceremonial", "ceremonies"],
@@ -168,11 +134,27 @@ const productMatchesOccasion = (product: Product, occasion: string) => {
   );
 };
 
-export function CategoryPage({ category = "all" }: CategoryPageProps) {
+const getReadableCategoryTitle = (value: string) =>
+  value
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+export function CategoryPage({
+  category = "all",
+  occasion,
+  priceMin,
+  priceMax,
+}: CategoryPageProps) {
+  const { navigate } = useNavigation();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("popular");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([
+    priceMin ?? 0,
+    priceMax ?? 1000,
+  ]);
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
@@ -199,20 +181,55 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
   const colors = Array.from(
     new Set(products.map((p) => p.productColor).filter(Boolean)),
   );
-  const showSareeOccasions = getCategoryMatchKeys(category).has("sarees");
+  const isAccessories = normalizeCategory(category) === "accessories";
+  const showOccasions = !isAccessories;
+  const routeOccasion = productOccasions.find(
+    (item) => item.id === normalizeCategory(occasion),
+  );
+  const sareeCollections = useMemo(() => {
+    const collectionNames = new Map<string, string>();
+
+    products
+      .filter((product) => productMatchesCategory(product, "sarees"))
+      .forEach((product) => {
+        const name = product.productCategory?.trim();
+        const key = normalizeCategory(name);
+
+        if (name && key && !collectionNames.has(key)) {
+          collectionNames.set(key, name);
+        }
+      });
+
+    return Array.from(collectionNames, ([id, name]) => ({ id, name })).slice(
+      0,
+      4,
+    );
+  }, [products]);
+  const showSareeCollections =
+    getCategoryMatchKeys(category).has("sarees") ||
+    sareeCollections.some(
+      (collection) => collection.id === normalizeCategory(category),
+    );
 
   useEffect(() => {
-    if (!showSareeOccasions) {
+    if (!showOccasions) {
       setSelectedOccasion(null);
     }
-  }, [showSareeOccasions]);
+  }, [showOccasions]);
 
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
     // Filter by category (from route parameter)
-    if (category && category !== "all") {
+    if (category && category !== "all" && !routeOccasion) {
       filtered = filtered.filter((p) => productMatchesCategory(p, category));
+    }
+
+    const activeOccasion = selectedOccasion || routeOccasion?.id;
+    if (showOccasions && activeOccasion) {
+      filtered = filtered.filter((p) =>
+        productMatchesOccasion(p, activeOccasion),
+      );
     }
 
     // Filter by price
@@ -231,13 +248,8 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
 
     // Filter by color
     if (selectedColors.length > 0) {
-      filtered = filtered.filter((p) => selectedColors.includes(p.productColor));
-    }
-
-    // Filter sarees by backend productOccasion
-    if (showSareeOccasions && selectedOccasion) {
       filtered = filtered.filter((p) =>
-        productMatchesOccasion(p, selectedOccasion),
+        selectedColors.includes(p.productColor),
       );
     }
 
@@ -276,13 +288,14 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
     selectedFabrics,
     selectedColors,
     selectedOccasion,
-    showSareeOccasions,
+    routeOccasion,
+    showOccasions,
     sortBy,
   ]);
 
   const categoryTitle =
     category && category !== "all"
-      ? categoryTitleMap[category] || "All Categories"
+      ? categoryTitleMap[category] || getReadableCategoryTitle(category)
       : "All Categories Collection";
 
   const getCategoryGroupName = () => {
@@ -306,7 +319,13 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <motion.div
+      key={`${category}-${occasion || "none"}-${selectedOccasion || "none"}`}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="min-h-screen py-8"
+    >
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
@@ -325,86 +344,86 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
           </p>
         </div>
 
-        {showSareeOccasions && (
-          <section className="mb-10">
-            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-secondary">
-                  Shop Sarees By Occasion
+        {showOccasions && (
+          <section className="mb-8 border-y border-border/70 py-5">
+            {showSareeCollections && sareeCollections.length > 0 && (
+              <div className="mb-5">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
+                  Saree Collections
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold">
-                  Modern and Indian styles for every moment
-                </h2>
-              </div>
+                <div className="flex flex-wrap gap-2">
+                  {sareeCollections.map((collection) => {
+                    const isSelected =
+                      normalizeCategory(category) === collection.id;
 
-              {selectedOccasion && (
+                    return (
+                      <Button
+                        key={collection.id}
+                        variant="outline"
+                        size="sm"
+                        aria-pressed={isSelected}
+                        className={`mt-0 h-8 whitespace-nowrap px-3 text-xs ${
+                          isSelected
+                            ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          navigate("category", { category: collection.id })
+                        }
+                      >
+                        {collection.name}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <span className="inline-flex border-l-2 border-secondary bg-secondary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                Shop by Occasion
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {productOccasions.map((occasion) => {
+                  const isSelected =
+                    (selectedOccasion || routeOccasion?.id) === occasion.id;
+
+                  return (
+                    <Button
+                      key={occasion.id}
+                      variant="outline"
+                      size="sm"
+                      className={`mt-0 h-8 whitespace-nowrap px-3 text-xs ${
+                        isSelected
+                          ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedOccasion((current) =>
+                          current === occasion.id ? null : occasion.id,
+                        )
+                      }
+                    >
+                      {occasion.name}
+                    </Button>
+                  );
+                })}
+              </div>
+              {(selectedOccasion || routeOccasion) && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setSelectedOccasion(null)}
+                  className="mt-0 h-8 whitespace-nowrap px-3 text-xs"
+                  onClick={() => {
+                    setSelectedOccasion(null);
+                    if (occasion) {
+                      navigate("category", { category });
+                    }
+                  }}
                 >
-                  Clear Occasion
+                  Clear
                 </Button>
               )}
-            </div>
-
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {sareeOccasions.map((occasion, index) => {
-                const isAll = occasion.id === "all";
-                const isSelected = isAll
-                  ? !selectedOccasion
-                  : selectedOccasion === occasion.id;
-                const itemCount = products.filter((product) => {
-                  if (!productMatchesCategory(product, "sarees")) {
-                    return false;
-                  }
-
-                  return isAll || productMatchesOccasion(product, occasion.id);
-                }).length;
-
-                return (
-                  <motion.button
-                    key={occasion.id}
-                    type="button"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.25 }}
-                    whileHover={{ y: -6 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      if (isAll) {
-                        setSelectedOccasion(null);
-                        return;
-                      }
-
-                      setSelectedOccasion((current) =>
-                        current === occasion.id ? null : occasion.id,
-                      );
-                    }}
-                    className={`group relative min-h-64 overflow-hidden rounded-lg border text-left shadow-sm transition-all duration-300 cursor-pointer ${
-                      isSelected
-                        ? "border-primary ring-2 ring-primary/30"
-                        : "border-border hover:border-primary/60"
-                    }`}
-                  >
-                    <ImageWithFallback
-                      src={occasion.image}
-                      alt={`${occasion.label} sarees`}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
-                    <div className="relative flex h-full min-h-64 flex-col justify-end p-5 text-white">
-                      <span className="mb-2 w-fit rounded-full bg-white/20 px-3 py-1 text-xs backdrop-blur">
-                        {itemCount} items
-                      </span>
-                      <h3 className="text-2xl font-semibold">
-                        {occasion.label}
-                      </h3>
-                      <p className="text-sm text-white/80">{occasion.style}</p>
-                    </div>
-                  </motion.button>
-                );
-              })}
             </div>
           </section>
         )}
@@ -421,8 +440,8 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {group.items.map((item) => {
-                      const itemCount = products.filter(
-                        (p) => productMatchesCategory(p, item.id),
+                      const itemCount = products.filter((p) =>
+                        productMatchesCategory(p, item.id),
                       ).length;
                       return (
                         <div
@@ -595,27 +614,27 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 <AnimatePresence mode="popLayout">
-                {filteredProducts.map((product) => (
-                  <motion.div
-                    key={product.id}
-                    layout
-                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -12, scale: 0.96 }}
-                    transition={{ duration: 0.22, ease: "easeOut" }}
-                  >
-                    <ProductCard
-                      id={product.id}
-                      productName={product.productName}
-                      productSellingPrice={product.productSellingPrice}
-                      productMrp={product.productMrp}
-                      productImages={product.productImages}
-                      productBadges={product.productBadges}
-                      productFabricType={product.productFabricType}
-                      productDiscount={product.productDiscount}
-                    />
-                  </motion.div>
-                ))}
+                  {filteredProducts.map((product) => (
+                    <motion.div
+                      key={product.id}
+                      layout
+                      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -12, scale: 0.96 }}
+                      transition={{ duration: 0.22, ease: "easeOut" }}
+                    >
+                      <ProductCard
+                        id={product.id}
+                        productName={product.productName}
+                        productSellingPrice={product.productSellingPrice}
+                        productMrp={product.productMrp}
+                        productImages={product.productImages}
+                        productBadges={product.productBadges}
+                        productFabricType={product.productFabricType}
+                        productDiscount={product.productDiscount}
+                      />
+                    </motion.div>
+                  ))}
                 </AnimatePresence>
               </motion.div>
             ) : (
@@ -640,6 +659,6 @@ export function CategoryPage({ category = "all" }: CategoryPageProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

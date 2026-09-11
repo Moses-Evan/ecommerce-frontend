@@ -71,22 +71,32 @@ export function HomePage() {
     {
       range: "10-50€",
       note: "Everyday",
+      min: 10,
+      max: 50,
     },
     {
       range: "50-100€",
       note: "Festive",
+      min: 50,
+      max: 100,
     },
     {
       range: "100-200€",
       note: "Silks",
+      min: 100,
+      max: 200,
     },
     {
       range: "200-500€",
       note: "Premium",
+      min: 200,
+      max: 500,
     },
     {
       range: "500€+",
       note: "Bridal",
+      min: 500,
+      max: 1000,
     },
   ];
 
@@ -119,7 +129,13 @@ export function HomePage() {
                 <button
                   key={priceRange.range}
                   type="button"
-                  onClick={() => navigate("category", { category: "all" })}
+                  onClick={() =>
+                    navigate("category", {
+                      category: "sarees",
+                      priceMin: priceRange.min,
+                      priceMax: priceRange.max,
+                    })
+                  }
                   className="group mx-auto flex aspect-square w-full max-w-[138px] flex-col items-center justify-center rounded-full border-[3px] border-[#8b1e2d]/30 bg-[#76000a] p-4 text-center text-white shadow-[0_8px_22px_rgba(118,0,10,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-400 hover:bg-[#8f0714] hover:shadow-[0_14px_30px_rgba(118,0,10,0.28)] focus:outline-none focus:ring-4 focus:ring-amber-400/40 sm:max-w-[150px] cursor-pointer"
                   aria-label={`Shop sarees priced ${priceRange.range}`}
                 >

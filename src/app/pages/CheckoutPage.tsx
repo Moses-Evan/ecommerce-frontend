@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useCart } from "../contexts/CartContext";
 import { useNavigation } from "../contexts/NavigationContext";
 import { Button } from "../components/ui/button";
@@ -12,8 +13,9 @@ export function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { navigate } = useNavigation();
   const [step, setStep] = useState<"info" | "payment" | "success">("info");
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("paypal");
   const [sameAsShipping, setSameAsShipping] = useState(true);
+  const [paymentError, setPaymentError] = useState("");
 
   const [shippingInfo, setShippingInfo] = useState({
     firstName: "",
@@ -28,14 +30,15 @@ export function CheckoutPage() {
 
   const shipping = totalPrice > 2999 ? 0 : 200;
   const finalTotal = totalPrice + shipping;
+  const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
   const handleSubmitInfo = (e: React.FormEvent) => {
     e.preventDefault();
     setStep("payment");
   };
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePaymentSuccess = () => {
+    setPaymentError("");
     setStep("success");
     setTimeout(() => {
       clearCart();
@@ -256,7 +259,7 @@ export function CheckoutPage() {
             )}
 
             {step === "payment" && (
-              <form onSubmit={handlePlaceOrder} className="space-y-6">
+              <div className="space-y-6">
                 <div className="bg-card border border-border rounded-lg p-6">
                   <h3 className="text-xl mb-4">Payment Method</h3>
                   <RadioGroup
@@ -264,7 +267,7 @@ export function CheckoutPage() {
                     onValueChange={setPaymentMethod}
                   >
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
+                      {/* <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
                         <RadioGroupItem value="card" id="card" />
                         <Label
                           htmlFor="card"
@@ -273,18 +276,18 @@ export function CheckoutPage() {
                           <CreditCard className="h-5 w-5" />
                           Credit / Debit Card
                         </Label>
-                      </div>
+                      </div> */}
                       <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
-                        <RadioGroupItem value="upi" id="upi" />
+                        <RadioGroupItem value="paypal" id="paypal-method" />
                         <Label
-                          htmlFor="upi"
+                          htmlFor="paypal-method"
                           className="flex items-center gap-2 cursor-pointer flex-1"
                         >
                           <Wallet className="h-5 w-5" />
-                          UPI
+                          Paypal
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
+                      {/* <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted/30">
                         <RadioGroupItem value="cod" id="cod" />
                         <Label
                           htmlFor="cod"
@@ -293,41 +296,74 @@ export function CheckoutPage() {
                           <Banknote className="h-5 w-5" />
                           Cash on Delivery
                         </Label>
-                      </div>
+                      </div> */}
                     </div>
                   </RadioGroup>
 
-                  {paymentMethod === "card" && (
-                    <div className="mt-6 space-y-4">
-                      <div>
-                        <Label htmlFor="cardNumber">Card Number</Label>
-                        <Input
-                          id="cardNumber"
-                          placeholder="1234 5678 9012 3456"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="expiry">Expiry Date</Label>
-                          <Input id="expiry" placeholder="MM/YY" />
-                        </div>
-                        <div>
-                          <Label htmlFor="cvv">CVV</Label>
-                          <Input
-                            id="cvv"
-                            placeholder="123"
-                            type="password"
-                            maxLength={3}
+                  {paymentMethod === "paypal" && (
+                    <div className="mt-6 border-t border-border pt-6">
+                      {paypalClientId ? (
+                        <PayPalScriptProvider
+                          options={{
+                            clientId: paypalClientId,
+                            currency: "EUR",
+                            locale: "de_DE",
+                            intent: "capture",
+                            components: "buttons",
+                          }}
+                        >
+                          <PayPalButtons
+                            style={{ layout: "vertical", shape: "rect" }}
+                            createOrder={(_, actions) =>
+                              actions.order.create({
+                                intent: "CAPTURE",
+                                purchase_units: [
+                                  {
+                                    amount: {
+                                      currency_code: "EUR",
+                                      value: finalTotal.toFixed(2),
+                                    },
+                                  },
+                                ],
+                              })
+                            }
+                            onApprove={async (_, actions) => {
+                              if (!actions.order) {
+                                throw new Error("PayPal order is unavailable");
+                              }
+                              await actions.order.capture();
+                              handlePaymentSuccess();
+                            }}
+                            onCancel={() => {
+                              setPaymentError(
+                                "PayPal checkout was cancelled. You can try again when ready.",
+                              );
+                            }}
+                            onError={(error) => {
+                              console.error("PayPal checkout error:", error);
+                              const details =
+                                error instanceof Error
+                                  ? error.message
+                                  : typeof error === "string"
+                                    ? error
+                                    : JSON.stringify(error);
+                              setPaymentError(
+                                `PayPal could not complete this payment: ${details || "PayPal returned an unknown error."}`,
+                              );
+                            }}
                           />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {paymentMethod === "upi" && (
-                    <div className="mt-6">
-                      <Label htmlFor="upiId">UPI ID</Label>
-                      <Input id="upiId" placeholder="yourname@upi" />
+                        </PayPalScriptProvider>
+                      ) : (
+                        <p className="text-sm text-destructive">
+                          PayPal is not configured. Add VITE_PAYPAL_CLIENT_ID to
+                          the environment before accepting payments.
+                        </p>
+                      )}
+                      {paymentError && (
+                        <p className="mt-3 text-sm text-destructive">
+                          {paymentError}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -341,11 +377,9 @@ export function CheckoutPage() {
                   >
                     Back
                   </Button>
-                  <Button type="submit" size="lg" className="flex-1">
-                    Place Order
-                  </Button>
+                  <div className="flex-1" />
                 </div>
-              </form>
+              </div>
             )}
           </div>
 

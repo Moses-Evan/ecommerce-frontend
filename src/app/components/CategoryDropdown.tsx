@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { categories } from "../../data/categories";
 import { useNavigation } from "../contexts/NavigationContext";
 
 interface CategoryItem {

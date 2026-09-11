@@ -14,6 +14,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { AccountPage } from "./pages/AccountPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
+import { WishlistProvider } from "./contexts/WishlistContext";
 
 function AppContent() {
   const { currentPage, params } = useNavigation();
@@ -23,7 +24,14 @@ function AppContent() {
       case "home":
         return <HomePage />;
       case "category":
-        return <CategoryPage category={params.category} />;
+        return (
+          <CategoryPage
+            category={params.category}
+            occasion={params.occasion}
+            priceMin={params.priceMin}
+            priceMax={params.priceMax}
+          />
+        );
       case "product":
         return <ProductDetailPage productId={params.productId} />;
       case "cart":
@@ -64,7 +72,9 @@ export default function App() {
   return (
     <NavigationProvider>
       <CartProvider>
-        <AppContent />
+        <WishlistProvider>
+          <AppContent />
+        </WishlistProvider>
       </CartProvider>
     </NavigationProvider>
   );

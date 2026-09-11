@@ -181,7 +181,7 @@ export function PremiumCollectionsSection({
                         }
                         className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
                       >
-                        View Collection
+                        View {collection.title}
                         <ArrowRight className="h-4 w-4" />
                       </button>
                     </div>

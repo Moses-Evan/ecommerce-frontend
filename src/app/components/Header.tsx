@@ -2,8 +2,9 @@ import { ShoppingCart, Search, Menu, Heart, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext";
 import { CollectionGroupDropdown } from "./CategoryDropdown";
-import { categories } from "../../data/categories";
+import { categories } from "../data/categories";
 import {
   Sheet,
   SheetTrigger,
@@ -16,14 +17,18 @@ import {
 export function Header() {
   const { navigate, page } = useNavigation();
   const { totalItems } = useCart();
+  const { productIds } = useWishlist();
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
       {/* Top Bar */}
-      <div className="bg-primary text-primary-foreground py-2">
-        <div className="container mx-auto px-4 flex justify-center items-center gap-4">
-          <p className="text-sm">Free Shipping on Orders Above 200€</p>
+      <div className="relative overflow-hidden bg-primary text-primary-foreground py-2">
+        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-secondary/25 to-transparent niorra-gold-sheen" />
+        <div className="container relative mx-auto px-4 flex justify-center items-center gap-4">
+          <span className="h-1 w-1 rotate-45 bg-secondary niorra-jewel-pulse" />
+          <p className="text-sm">Flash Sale Going On!</p>
+          <span className="h-1 w-1 rotate-45 bg-secondary niorra-jewel-pulse [animation-delay:400ms]" />
         </div>
       </div>
 
@@ -92,7 +97,7 @@ export function Header() {
                   )}
                 </div>
 
-                <SheetClose asChild>
+                {/* <SheetClose asChild>
                   <button
                     onClick={() =>
                       navigate("category", { category: "accessories" })
@@ -101,7 +106,7 @@ export function Header() {
                   >
                     Accessories
                   </button>
-                </SheetClose>
+                </SheetClose> */}
                 <SheetClose asChild>
                   <button
                     onClick={() => navigate("contact")}
@@ -157,12 +162,12 @@ export function Header() {
                 items={group.items}
               />
             ))}
-            <button
+            {/* <button
               onClick={() => navigate("category", { category: "accessories" })}
               className={`text-foreground hover:text-primary transition-colors cursor-pointer ${page === "category" ? "text-primary" : ""}`}
             >
               Accessories
-            </button>
+            </button> */}
             <button
               onClick={() => navigate("contact")}
               className={`text-foreground hover:text-primary transition-colors cursor-pointer ${page === "contact" ? "text-primary" : ""}`}
@@ -173,17 +178,25 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <button
+            {/* <button
               aria-label="Search products"
-              className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
+              className="relative hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
             >
               <Search className="h-5 w-5" />
-            </button>
+            </button> */}
             <button
-              aria-label="View wishlist"
-              className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
+              onClick={() => navigate("account", { tab: "wishlist" })}
+              aria-label={`View wishlist${productIds.length ? ` (${productIds.length} items)` : ""}`}
+              className={`relative hidden md:block rounded-full p-2 transition-colors cursor-pointer ${productIds.length > 0 ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-accent/10"}`}
             >
-              <Heart className="h-5 w-5" />
+              <Heart
+                className={`h-5 w-5 ${productIds.length > 0 ? "fill-current" : ""}`}
+              />
+              {productIds.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {productIds.length}
+                </span>
+              )}
             </button>
             <button
               onClick={() => navigate("account")}

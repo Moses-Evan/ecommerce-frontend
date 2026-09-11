@@ -84,7 +84,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative h-[400px] sm:h-[500px] md:h-[900px] overflow-hidden"
+      className="relative h-[clamp(440px,72svh,800px)] min-h-[440px] overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -93,27 +93,27 @@ export function Hero() {
         setApi={setApi}
         className="h-full"
       >
-        <CarouselContent className="h-full !ml-0 w-full">
+        <CarouselContent className="h-full min-h-0 !ml-0 w-full">
           {heroSlides.map((slide) => (
             <CarouselItem
               key={slide.src}
-              className="relative h-full basis-full !pl-0"
+              className="relative h-full min-h-0 w-full basis-full !overflow-hidden !pl-0"
             >
               <ImageWithFallback
                 src={slide.src}
                 alt={slide.alt}
-                className="h-full w-full object-cover"
+                className="block h-full w-full scale-[1.08] object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              <div className="absolute inset-0 flex flex-col items-center justify-end md:justify-center md:px-6">
-                <div className="hidden md:block w-full max-w-3xl text-center text-white md:text-left pb-0">
-                  <p className="mb-3 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-white/90 shadow-black/20 shadow-sm backdrop-blur-sm md:text-xs">
+              <div className="absolute inset-0 flex flex-col justify-end px-5 pb-24 sm:px-8 sm:pb-28 md:justify-center md:px-12 md:pb-0 lg:px-20">
+                <div className="w-full max-w-3xl text-center text-white md:text-left">
+                  <p className="mb-3 inline-flex max-w-full rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/90 shadow-sm shadow-black/20 backdrop-blur-sm sm:tracking-[0.28em] md:text-xs">
                     {slide.label}
                   </p>
-                  <h1 className="text-3xl font-semibold leading-tight tracking-tight mb-3 md:text-6xl md:mb-6">
+                  <h1 className="mb-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:mb-6 md:text-6xl">
                     {slide.headline}
                   </h1>
-                  <p className="text-sm text-white/85 mb-4 md:text-xl md:mb-6">
+                  <p className="mb-4 text-sm leading-relaxed text-white/85 sm:text-base md:mb-6 md:text-xl">
                     {slide.description}
                   </p>
                 </div>

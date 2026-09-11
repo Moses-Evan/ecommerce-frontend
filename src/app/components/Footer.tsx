@@ -16,7 +16,7 @@ export function Footer() {
           <div>
             <div className="text-2xl mb-4 text-secondary flex items-center gap-2">
               <img src="src\images\logo-icon.png" width={80} alt="" />
-              <h3 style={{ color: "#ffe211" }}>NIORRA</h3>
+              <h3 className="text-niorra-red" style={{ color: "#ffe211" }}>NIORRA</h3>
             </div>
             <p className="text-lg font-normal mb-1">
               We started Niorra in 2012,
