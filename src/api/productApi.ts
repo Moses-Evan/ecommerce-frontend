@@ -3,12 +3,12 @@ import { Product } from "../types/Product";
 
 type BackendProduct = Omit<Product, "id"> & { id: string | number };
 
-// const API = axios.create({
-//   baseURL: "https://ql4zl5fz-8080.inc1.devtunnels.ms/api",
-// });
 const API = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "https://ql4zl5fz-8080.inc1.devtunnels.ms/api",
 });
+// const API = axios.create({
+//   baseURL: "http://localhost:8080/api",
+// });
 
 export const getAllProducts = async () => {
   const response = await API.get<BackendProduct[]>("/products");

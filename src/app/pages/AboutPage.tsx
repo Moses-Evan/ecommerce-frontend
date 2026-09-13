@@ -1,51 +1,59 @@
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { Heart, Award, Users, Globe } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function AboutPage() {
+  const { t } = useLanguage();
   const values = [
     {
       icon: <Heart className="h-8 w-8 text-secondary" />,
       title: "Passion for Tradition",
-      description: "We celebrate India's rich textile heritage through authentic sarees"
+      description:
+        "We celebrate India's rich textile heritage through authentic sarees",
     },
     {
       icon: <Award className="h-8 w-8 text-secondary" />,
       title: "Quality Excellence",
-      description: "Every saree is handpicked for superior quality and craftsmanship"
+      description:
+        "Every saree is handpicked for superior quality and craftsmanship",
     },
     {
       icon: <Users className="h-8 w-8 text-secondary" />,
       title: "Artisan Support",
-      description: "We work directly with master weavers across India"
+      description: "We work directly with master weavers across India",
     },
     {
       icon: <Globe className="h-8 w-8 text-secondary" />,
       title: "Global Reach",
-      description: "Bringing Indian elegance to women worldwide"
-    }
+      description: "Bringing Indian elegance to women worldwide",
+    },
   ];
 
   const process = [
     {
       step: "1",
       title: "Sourcing",
-      description: "We travel across India to source the finest sarees from master weavers and artisan communities."
+      description:
+        "We travel across India to source the finest sarees from master weavers and artisan communities.",
     },
     {
       step: "2",
       title: "Quality Check",
-      description: "Each saree undergoes rigorous quality inspection to ensure authenticity and craftsmanship."
+      description:
+        "Each saree undergoes rigorous quality inspection to ensure authenticity and craftsmanship.",
     },
     {
       step: "3",
       title: "Curation",
-      description: "Our experts curate collections that blend traditional elegance with contemporary appeal."
+      description:
+        "Our experts curate collections that blend traditional elegance with contemporary appeal.",
     },
     {
       step: "4",
       title: "Delivery",
-      description: "Carefully packaged and delivered to your doorstep with love and care."
-    }
+      description:
+        "Carefully packaged and delivered to your doorstep with love and care.",
+    },
   ];
 
   return (
@@ -59,8 +67,10 @@ export function AboutPage() {
         />
         <div className="absolute inset-0 bg-primary/70 flex items-center justify-center">
           <div className="text-center text-white">
-            <h1 className="text-5xl md:text-6xl mb-4">Our Story</h1>
-            <p className="text-xl">Weaving traditions into timeless elegance</p>
+            <h1 className="text-5xl md:text-6xl mb-4">{t("Our Story")}</h1>
+            <p className="text-xl">
+              {t("Weaving traditions into timeless elegance")}
+            </p>
           </div>
         </div>
       </section>
@@ -69,17 +79,22 @@ export function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-secondary mb-2 tracking-widest uppercase">About Us</p>
+            <p className="text-secondary mb-2 tracking-widest uppercase">
+              {t("About Us")}
+            </p>
             <h2 className="text-4xl mb-6">Draupadi Vastralya</h2>
             <p className="text-lg mb-6 leading-relaxed">
-              Founded with a vision to celebrate India's rich textile heritage, Draupadi Vastralya brings together 
-              the finest sarees from master weavers across the country. Our name draws inspiration from Draupadi, 
-              the epitome of grace and strength in Indian mythology, reflecting the timeless elegance our sarees embody.
+              Founded with a vision to celebrate India's rich textile heritage,
+              Draupadi Vastralya brings together the finest sarees from master
+              weavers across the country. Our name draws inspiration from
+              Draupadi, the epitome of grace and strength in Indian mythology,
+              reflecting the timeless elegance our sarees embody.
             </p>
             <p className="text-lg leading-relaxed">
-              Each saree in our collection tells a story of tradition, craftsmanship, and cultural pride. We work 
-              directly with artisan communities, ensuring fair trade practices while preserving ancient weaving 
-              techniques for future generations.
+              Each saree in our collection tells a story of tradition,
+              craftsmanship, and cultural pride. We work directly with artisan
+              communities, ensuring fair trade practices while preserving
+              ancient weaving techniques for future generations.
             </p>
           </div>
         </div>
@@ -89,8 +104,10 @@ export function AboutPage() {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-secondary mb-2 tracking-widest uppercase">Our Values</p>
-            <h2 className="text-4xl mb-4">What We Stand For</h2>
+            <p className="text-secondary mb-2 tracking-widest uppercase">
+              {t("Our Values")}
+            </p>
+            <h2 className="text-4xl mb-4">{t("What We Stand For")}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -98,7 +115,9 @@ export function AboutPage() {
               <div key={index} className="text-center">
                 <div className="flex justify-center mb-4">{value.icon}</div>
                 <h3 className="text-lg mb-2">{value.title}</h3>
-                <p className="text-sm text-muted-foreground">{value.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {value.description}
+                </p>
               </div>
             ))}
           </div>
@@ -109,10 +128,13 @@ export function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-secondary mb-2 tracking-widest uppercase">Our Process</p>
-            <h2 className="text-4xl mb-4">From Loom to You</h2>
+            <p className="text-secondary mb-2 tracking-widest uppercase">
+              {t("Our Process")}
+            </p>
+            <h2 className="text-4xl mb-4">{t("From Loom to You")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Every saree goes through a meticulous journey to ensure you receive nothing but the finest
+              Every saree goes through a meticulous journey to ensure you
+              receive nothing but the finest
             </p>
           </div>
 
@@ -125,7 +147,9 @@ export function AboutPage() {
                   </div>
                   <div>
                     <h3 className="text-lg mb-2">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -167,10 +191,11 @@ export function AboutPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl mb-6">Our Mission</h2>
+            <h2 className="text-4xl mb-6">{t("Our Mission")}</h2>
             <p className="text-lg leading-relaxed">
-              To preserve and promote India's textile heritage by connecting artisans with connoisseurs 
-              of fine sarees, while ensuring sustainable livelihoods for weaving communities and bringing 
+              To preserve and promote India's textile heritage by connecting
+              artisans with connoisseurs of fine sarees, while ensuring
+              sustainable livelihoods for weaving communities and bringing
               timeless elegance to modern wardrobes.
             </p>
           </div>

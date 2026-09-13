@@ -22,6 +22,7 @@ import { getAllProducts } from "../../api/productApi";
 import { Product } from "../../types/Product";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigation } from "../contexts/NavigationContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface CategoryPageProps {
   category?: string;
@@ -148,6 +149,7 @@ export function CategoryPage({
   priceMax,
 }: CategoryPageProps) {
   const { navigate } = useNavigation();
+  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("popular");
@@ -431,7 +433,7 @@ export function CategoryPage({
         {/* Category Showcase - Show all categories when viewing all collections */}
         {category === "all" && (
           <div className="mb-12">
-            <h3 className="text-2xl font-bold mb-6">Shop by Category</h3>
+            <h3 className="text-2xl font-bold mb-6">{t("Shop by Category")}</h3>
             <div className="grid grid-cols-1 gap-8">
               {categories.map((group) => (
                 <div key={group.name}>
@@ -482,13 +484,15 @@ export function CategoryPage({
           >
             <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold">Filters</h3>
+                <h3 className="text-lg font-semibold">{t("Filters")}</h3>
                 <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
               </div>
 
               {/* Price Range */}
               <div className="mb-6">
-                <Label className="mb-3 block font-semibold">Price Range</Label>
+                <Label className="mb-3 block font-semibold">
+                  {t("Price Range")}
+                </Label>
                 <Slider
                   min={10}
                   max={1000}
@@ -506,7 +510,9 @@ export function CategoryPage({
               {/* Fabric Filter */}
               {fabrics.length > 0 && (
                 <div className="mb-6">
-                  <Label className="mb-3 block font-semibold">Fabric</Label>
+                  <Label className="mb-3 block font-semibold">
+                    {t("Fabric")}
+                  </Label>
                   <div className="space-y-2">
                     {fabrics.map((fabric) => (
                       <div key={fabric} className="flex items-center gap-2">
@@ -530,7 +536,9 @@ export function CategoryPage({
               {/* Color Filter */}
               {colors.length > 0 && (
                 <div className="mb-6">
-                  <Label className="mb-3 block font-semibold">Color</Label>
+                  <Label className="mb-3 block font-semibold">
+                    {t("Color")}
+                  </Label>
                   <div className="space-y-2">
                     {colors.map((color) => (
                       <div key={color} className="flex items-center gap-2">
@@ -582,14 +590,14 @@ export function CategoryPage({
               </Button>
 
               <div className="flex items-center gap-2 ml-auto">
-                <Label className="text-sm font-semibold">Sort by:</Label>
+                <Label className="text-sm font-semibold">{t("Sort by:")}</Label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-40">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="popular">Popular</SelectItem>
-                    <SelectItem value="new">New Arrivals</SelectItem>
+                    <SelectItem value="popular">{t("Popular")}</SelectItem>
+                    <SelectItem value="new">{t("New Arrivals")}</SelectItem>
                     <SelectItem value="price-low">
                       Price: Low to High
                     </SelectItem>

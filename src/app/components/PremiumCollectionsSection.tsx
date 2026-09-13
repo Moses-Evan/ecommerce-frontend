@@ -5,6 +5,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ProductCard } from "./ProductCard";
 import { Product } from "../../types/Product";
 import { useNavigation } from "../contexts/NavigationContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface CollectionItem {
   id: string;
@@ -81,6 +82,7 @@ export function PremiumCollectionsSection({
   loading = false,
 }: PremiumCollectionsSectionProps) {
   const { navigate } = useNavigation();
+  const { t } = useLanguage();
   const items = useMemo(
     () => (collections ?? buildCollectionsFromProducts(products)).slice(0, 4),
     [collections, products],
@@ -106,10 +108,10 @@ export function PremiumCollectionsSection({
         >
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-4 py-2 text-sm font-semibold text-rose-700 shadow-xl backdrop-blur-xl">
             <Sparkles className="h-4 w-4" />
-            Collections curated for festive elegance
+            {t("Collections curated for festive elegance")}
           </div>
           <h2 className="text-3xl font-semibold text-stone-900 md:text-4xl">
-            Discover latest saree collections in a premium showcase
+            {t("Discover latest saree collections in a premium showcase")}
           </h2>
         </motion.div>
 
@@ -181,7 +183,7 @@ export function PremiumCollectionsSection({
                         }
                         className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
                       >
-                        View {collection.title}
+                        {t("View collection")} {collection.title}
                         <ArrowRight className="h-4 w-4" />
                       </button>
                     </div>

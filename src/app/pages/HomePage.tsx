@@ -11,9 +11,11 @@ import { useNavigation } from "../contexts/NavigationContext";
 import { Button } from "../components/ui/button";
 import { PremiumCollectionsSection } from "../components/PremiumCollectionsSection";
 import { useEffect, useState } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function HomePage() {
   const { navigate } = useNavigation();
+  const { t } = useLanguage();
   const categories = [
     {
       title: "Wedding Collection",
@@ -114,9 +116,11 @@ export function HomePage() {
 
             <div className="relative text-center">
               <p className="mb-2 text-xs tracking-[0.35em] text-secondary uppercase">
-                Curated Sarees
+                {t("Curated Sarees")}
               </p>
-              <h2 className="text-4xl md:text-5xl mb-3">Shop by Price</h2>
+              <h2 className="text-4xl md:text-5xl mb-3">
+                {t("Shop by Price")}
+              </h2>
               <div className="mx-auto mb-8 flex max-w-xs items-center justify-center gap-3">
                 <span className="h-px flex-1 bg-secondary/40" />
                 <span className="h-2 w-2 rotate-45 bg-secondary" />
@@ -144,7 +148,7 @@ export function HomePage() {
                     {priceRange.range}
                   </span>
                   <span className="mt-1 text-xs uppercase tracking-widest text-white/80 sm:text-sm">
-                    {priceRange.note}
+                    {t(priceRange.note)}
                   </span>
                 </button>
               ))}
@@ -182,18 +186,18 @@ export function HomePage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <p className="text-secondary mb-2 tracking-widest uppercase">
-              Bestsellers
+              {t("Bestsellers")}
             </p>
-            <h2 className="text-4xl md:text-5xl mb-4">Newly Arrived</h2>
+            <h2 className="text-4xl md:text-5xl mb-4">{t("Newly Arrived")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Handpicked selections from our most loved collections
+              {t("Handpicked selections from our most loved collections")}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
               <div className="col-span-full text-center py-10">
-                Loading products...
+                {t("Loading products...")}
               </div>
             ) : (
               featuredProducts.map((product) => (
@@ -214,10 +218,10 @@ export function HomePage() {
 
           <div className="text-center mt-12">
             <Button
-              onClick={() => navigate("category", { category: "all" })}
+              onClick={() => navigate("category", { category: "sarees" })}
               size="lg"
             >
-              View All Products
+              {t("View All Products")}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -338,29 +342,23 @@ export function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-secondary mb-2 tracking-widest uppercase">
-                Why Niorra
+                {t("Why Niorra")}
               </p>
               <h2 className="text-4xl mb-6">
-                Crafted with Love, Delivered with Care
+                {t("Crafted with Love, Delivered with Care")}
               </h2>
               <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                Niorra has become the best online shopping site in Sarees &
-                ready made Blouses. Niorra brings you an array of silk sarees,
-                cotton sari and linen handloom sarees online. Famously known as
-                pure silk saree brand in India, A perfect place to buy hand loom
-                silk sari from the best online shopping website for a popular
-                bridal, party wear & reception saree choice.
+                {t(
+                  "Niorra has become the best online shopping site in Sarees & ready made Blouses. Niorra brings you an array of silk sarees, cotton sari and linen handloom sarees online. Famously known as pure silk saree brand in India, A perfect place to buy hand loom silk sari from the best online shopping website for a popular bridal, party wear & reception saree choice.",
+                )}
               </p>
               <h2 className="text-4xl mb-6">
-                No. 1 Saree collection in Germany
+                {t("No. 1 Saree collection in Germany")}
               </h2>
               <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-                More then 2000 designs in sarees are available in stock. A range
-                of pure silk sarees is available at your fingertips for you to
-                explore and choose. Shop from the comforts of your surrounding
-                and look for what you want. No bargaining or haggling, but
-                certainly various options for online saree shopping in Germany,
-                such as Pay by card, Pay Pal
+                {t(
+                  "More then 2000 designs in sarees are available in stock. A range of pure silk sarees is available at your fingertips for you to explore and choose. Shop from the comforts of your surrounding and look for what you want. No bargaining or haggling, but certainly various options for online saree shopping in Germany, such as Pay by card, Pay Pal",
+                )}
               </p>
 
               <div className="space-y-4">
@@ -369,10 +367,11 @@ export function HomePage() {
                     <Star className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h4 className="mb-1">Authentic Craftsmanship</h4>
+                    <h4 className="mb-1">{t("Authentic Craftsmanship")}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Direct sourcing from traditional weavers ensures genuine
-                      quality
+                      {t(
+                        "Direct sourcing from traditional weavers ensures genuine quality",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -382,9 +381,11 @@ export function HomePage() {
                     <Star className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h4 className="mb-1">Curated Collections</h4>
+                    <h4 className="mb-1">{t("Curated Collections")}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Every piece is carefully selected to match your style
+                      {t(
+                        "Every piece is carefully selected to match your style",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -394,9 +395,11 @@ export function HomePage() {
                     <Star className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h4 className="mb-1">Sustainable Practices</h4>
+                    <h4 className="mb-1">{t("Sustainable Practices")}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Supporting artisan communities and preserving traditions
+                      {t(
+                        "Supporting artisan communities and preserving traditions",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -438,19 +441,27 @@ export function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl md:text-5xl mb-2">10,000+</div>
-              <p className="text-primary-foreground/80">Happy Customers</p>
+              <p className="text-primary-foreground/80">
+                {t("Happy Customers")}
+              </p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl mb-2">500+</div>
-              <p className="text-primary-foreground/80">Unique Designs</p>
+              <p className="text-primary-foreground/80">
+                {t("Unique Designs")}
+              </p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl mb-2">50+</div>
-              <p className="text-primary-foreground/80">Master Weavers</p>
+              <p className="text-primary-foreground/80">
+                {t("Master Weavers")}
+              </p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl mb-2">15+</div>
-              <p className="text-primary-foreground/80">States Covered</p>
+              <p className="text-primary-foreground/80">
+                {t("States Covered")}
+              </p>
             </div>
           </div>
         </div>

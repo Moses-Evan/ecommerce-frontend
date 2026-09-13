@@ -26,6 +26,7 @@ import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { getAllProducts, getProductById } from "../../api/productApi";
 import { Product } from "../../types/Product";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface ProductDetailPageProps {
   productId: string;
@@ -71,6 +72,7 @@ export function ProductDetailPage({
   productId,
   relatedProducts = [],
 }: ProductDetailPageProps) {
+  const { t } = useLanguage();
   const [product, setProduct] = useState<Product | null>(null);
   const [fetchedRelatedProducts, setFetchedRelatedProducts] = useState<
     Product[]
@@ -112,7 +114,9 @@ export function ProductDetailPage({
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading product details...</p>
+          <p className="text-muted-foreground">
+            {t("Loading product details...")}
+          </p>
         </div>
       </div>
     );
@@ -122,7 +126,7 @@ export function ProductDetailPage({
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground">Product not found.</p>
+          <p className="text-muted-foreground">{t("Product not found.")}</p>
         </div>
       </div>
     );
@@ -150,7 +154,7 @@ export function ProductDetailPage({
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <div className="text-sm text-muted-foreground mb-8 flex flex-wrap gap-2">
-          <span className="hover:text-primary cursor-pointer">Home</span>
+          <span className="hover:text-primary cursor-pointer">{t("Home")}</span>
 
           <span>/</span>
 
@@ -273,7 +277,7 @@ export function ProductDetailPage({
           <div className="min-w-0 lg:flex-[0.92] lg:border-l lg:border-border lg:pl-10 lg:pt-2">
             <div className="flex gap-2 mb-4">
               {product.productBadges?.includes("New") && (
-                <Badge className="bg-red-500">New</Badge>
+                <Badge className="bg-red-500">{t("New")}</Badge>
               )}
               {product.productBadges?.includes("Bestseller") && (
                 <Badge className="bg-yellow-500 text-secondary-foreground">
@@ -305,11 +309,13 @@ export function ProductDetailPage({
             <div className="mb-6">
               {product.productStock > 0 ? (
                 <div className="space-y-3">
-                  <Badge className="bg-green-600">In Stock</Badge>
+                  <Badge className="bg-green-600">{t("In Stock")}</Badge>
                   {product.productStock < 10 && (
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-sm font-semibold">
-                        <span className="text-foreground">Hurry up!</span>
+                        <span className="text-foreground">
+                          {t("Hurry up!")}
+                        </span>
                         <motion.span
                           animate={{ scale: [1, 1.2, 1] }}
                           transition={{ duration: 0.7, repeat: Infinity }}
@@ -318,11 +324,11 @@ export function ProductDetailPage({
                       </div>
 
                       <p className="text-sm text-foreground">
-                        Only{" "}
+                        {t("Only")}{" "}
                         <span className="text-primary">
                           {product.productStock}
                         </span>{" "}
-                        left in stock.
+                        {t("left in stock.")}
                       </p>
 
                       <div className="space-y-1">
@@ -337,15 +343,17 @@ export function ProductDetailPage({
                           />
                         </div>
                         <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Low stock</span>
-                          <span>{product.productStock} pcs left</span>
+                          <span>{t("Low stock")}</span>
+                          <span>
+                            {product.productStock} {t("pcs left")}
+                          </span>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <Badge variant="destructive">Out of Stock</Badge>
+                <Badge variant="destructive">{t("Out of Stock")}</Badge>
               )}
             </div>
 
@@ -356,7 +364,7 @@ export function ProductDetailPage({
 
             {/* SIZE */}
             {/* <div className="mb-8">
-              <h3 className="font-medium mb-3">Select Size</h3>
+              <h3 className="font-medium mb-3">{t("Select Size")}</h3>
 
               <div className="flex flex-wrap gap-3">
                 {sizes.map((size) => (
@@ -377,7 +385,7 @@ export function ProductDetailPage({
 
             {/* QUANTITY */}
             <div className="mb-8">
-              <h3 className="font-medium mb-3">Quantity</h3>
+              <h3 className="font-medium mb-3">{t("Quantity")}</h3>
 
               <div className="flex items-center border rounded-xl w-fit overflow-hidden">
                 <Button
@@ -409,7 +417,7 @@ export function ProductDetailPage({
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add To Cart
+                {t("Add To Cart")}
               </Button>
 
               <Button
@@ -434,13 +442,13 @@ export function ProductDetailPage({
 
             <div className="grid sm:grid-cols-2 gap-6 pb-8">
               <div className="border rounded-2xl p-5">
-                <p className="text-muted-foreground">Brand</p>
+                <p className="text-muted-foreground">{t("Brand")}</p>
 
                 <p className="font-medium">{product.productBrand}</p>
               </div>
 
               <div className="border rounded-2xl p-5">
-                <p className="text-muted-foreground">Color</p>
+                <p className="text-muted-foreground">{t("Color")}</p>
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{product.productColor} </p>
                   <p
@@ -451,13 +459,13 @@ export function ProductDetailPage({
               </div>
 
               <div className="border rounded-2xl p-5">
-                <p className="text-muted-foreground">Fabric</p>
+                <p className="text-muted-foreground">{t("Fabric")}</p>
 
                 <p className="font-medium">{product.productFabricType}</p>
               </div>
 
               <div className="border rounded-2xl p-5">
-                <p className="text-muted-foreground">Occasion</p>
+                <p className="text-muted-foreground">{t("Occasion")}</p>
 
                 <p className="font-medium">
                   {product.productOccasion.join(", ")}
@@ -471,10 +479,10 @@ export function ProductDetailPage({
                 <Truck className="w-5 h-5 mt-1 text-primary" />
 
                 <div>
-                  <p className="font-medium">Free Shipping</p>
+                  <p className="font-medium">{t("Free Shipping")}</p>
 
                   <p className="text-sm text-muted-foreground">
-                    On orders above 200€
+                    {t("On orders above 200€")}
                   </p>
                 </div>
               </div>
@@ -483,10 +491,10 @@ export function ProductDetailPage({
                 <RotateCcw className="w-5 h-5 mt-1 text-primary" />
 
                 <div>
-                  <p className="font-medium">Easy Returns</p>
+                  <p className="font-medium">{t("Easy Returns")}</p>
 
                   <p className="text-sm text-muted-foreground">
-                    7 day return policy
+                    {t("7 day return policy")}
                   </p>
                 </div>
               </div>
@@ -495,10 +503,10 @@ export function ProductDetailPage({
                 <ShieldCheck className="w-5 h-5 mt-1 text-primary" />
 
                 <div>
-                  <p className="font-medium">Secure Payments</p>
+                  <p className="font-medium">{t("Secure Payments")}</p>
 
                   <p className="text-sm text-muted-foreground">
-                    100% secure checkout
+                    {t("100% secure checkout")}
                   </p>
                 </div>
               </div>
@@ -510,11 +518,11 @@ export function ProductDetailPage({
         <div className="mt-20">
           <Tabs defaultValue="description">
             <TabsList className="mb-8">
-              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="description">{t("Description")}</TabsTrigger>
 
-              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="details">{t("Details")}</TabsTrigger>
 
-              <TabsTrigger value="shipping">Shipping</TabsTrigger>
+              <TabsTrigger value="shipping">{t("Shipping")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="description">
@@ -573,7 +581,9 @@ export function ProductDetailPage({
         {/* RELATED PRODUCTS */}
         {productsToShow.length > 0 && (
           <div className="mt-24">
-            <h2 className="text-3xl font-semibold mb-8">Related Products</h2>
+            <h2 className="text-3xl font-semibold mb-8">
+              {t("Related Products")}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {productsToShow.map((item) => (

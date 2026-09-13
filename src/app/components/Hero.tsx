@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useLanguage } from "../contexts/LanguageContext";
 import {
   Carousel,
   CarouselContent,
@@ -47,6 +48,7 @@ const heroSlides = [
 const AUTO_PLAY_INTERVAL = 3000;
 
 export function Hero() {
+  const { t } = useLanguage();
   const [api, setApi] = React.useState<CarouselApi | null>(null);
   const [activeSlide, setActiveSlide] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
@@ -108,13 +110,13 @@ export function Hero() {
               <div className="absolute inset-0 flex flex-col justify-end px-5 pb-24 sm:px-8 sm:pb-28 md:justify-center md:px-12 md:pb-0 lg:px-20">
                 <div className="w-full max-w-3xl text-center text-white md:text-left">
                   <p className="mb-3 inline-flex max-w-full rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/90 shadow-sm shadow-black/20 backdrop-blur-sm sm:tracking-[0.28em] md:text-xs">
-                    {slide.label}
+                    {t(slide.label)}
                   </p>
                   <h1 className="mb-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:mb-6 md:text-6xl">
-                    {slide.headline}
+                    {t(slide.headline)}
                   </h1>
                   <p className="mb-4 text-sm leading-relaxed text-white/85 sm:text-base md:mb-6 md:text-xl">
-                    {slide.description}
+                    {t(slide.description)}
                   </p>
                 </div>
               </div>
@@ -128,7 +130,7 @@ export function Hero() {
         <div className="absolute inset-x-0 bottom-4 z-20 flex flex-col items-center gap-3 px-4 md:bottom-8">
           <div className="hidden max-w-full items-center justify-center gap-2 rounded-full bg-[rgba(255,255,255,0.1)] px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-white/85 shadow-xl shadow-black/20 backdrop-blur-sm md:px-5 md:py-2 md:text-xs md:flex">
             <span className="inline-flex h-2 w-2 rounded-full bg-secondary" />
-            <span>Timeless saree stories, now in motion</span>
+            <span>{t("Timeless saree stories, now in motion")}</span>
           </div>
           <div className="flex items-center gap-3">
             {heroSlides.map((_, index) => (

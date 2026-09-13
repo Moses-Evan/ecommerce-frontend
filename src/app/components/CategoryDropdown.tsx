@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavigation } from "../contexts/NavigationContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface CategoryItem {
   id: string;
@@ -19,6 +20,7 @@ export function CollectionGroupDropdown({
   items,
 }: CollectionGroupDropdownProps) {
   const { navigate } = useNavigation();
+  const { t } = useLanguage();
 
   const handleCategoryClick = (categoryId: string) => {
     navigate("category", { category: categoryId });
@@ -26,8 +28,8 @@ export function CollectionGroupDropdown({
 
   return (
     <div className="relative group">
-      <button className="text-foreground hover:text-accent transition-colors cursor-pointer flex items-center gap-1 group-hover:text-primary">
-        {groupName}
+      <button className="shrink-0 whitespace-nowrap text-xs text-foreground hover:text-accent transition-colors cursor-pointer flex items-center gap-1 group-hover:text-primary xl:text-sm">
+        {t(groupName)}
         <ChevronDown className="h-4 w-4 group-hover:rotate-180 transition-transform duration-300" />
       </button>
 
@@ -45,7 +47,7 @@ export function CollectionGroupDropdown({
                     onClick={() => handleCategoryClick(item.id)}
                     className="block w-full text-left px-3 py-2 text-sm text-foreground/80 hover:text-primary hover:bg-primary/5 dark:hover:bg-primary/10 rounded-md transition-all duration-200 hover:translate-x-1 whitespace-nowrap cursor-pointer"
                   >
-                    {item.name}
+                    {t(item.name)}
                   </button>
                 </li>
               ))}

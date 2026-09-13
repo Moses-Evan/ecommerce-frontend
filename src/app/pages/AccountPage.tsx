@@ -14,10 +14,12 @@ import {
 } from "../components/ui/tabs";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function AccountPage() {
   const { navigate, params } = useNavigation();
   const { productIds } = useWishlist();
+  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -60,9 +62,9 @@ export function AccountPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-4xl mb-2">My Account</h1>
+          <h1 className="text-4xl mb-2">{t("My Account")}</h1>
           <p className="text-muted-foreground">
-            Manage your orders and account settings
+            {t("Manage your orders and account settings")}
           </p>
         </div>
 
@@ -72,26 +74,26 @@ export function AccountPage() {
             <div className="bg-card border border-border rounded-lg p-6 space-y-2">
               <button className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted/30 transition-colors text-left">
                 <Package className="h-5 w-5" />
-                <span>My Orders</span>
+                <span>{t("My Orders")}</span>
               </button>
               <button className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted/30 transition-colors text-left">
                 <Heart className="h-5 w-5" />
-                <span>Wishlist</span>
+                <span>{t("Wishlist")}</span>
               </button>
               <button className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted/30 transition-colors text-left">
                 <MapPin className="h-5 w-5" />
-                <span>Addresses</span>
+                <span>{t("Addresses")}</span>
               </button>
               <button className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted/30 transition-colors text-left">
                 <User className="h-5 w-5" />
-                <span>Profile</span>
+                <span>{t("Profile")}</span>
               </button>
               <button
                 onClick={() => navigate("login")}
                 className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-destructive/10 hover:text-destructive transition-colors text-left"
               >
                 <LogOut className="h-5 w-5" />
-                <span>Logout</span>
+                <span>{t("Logout")}</span>
               </button>
             </div>
           </aside>
@@ -102,10 +104,10 @@ export function AccountPage() {
               defaultValue={params.tab === "wishlist" ? "wishlist" : "orders"}
             >
               <TabsList className="mb-6">
-                <TabsTrigger value="orders">Orders</TabsTrigger>
-                <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-                <TabsTrigger value="addresses">Addresses</TabsTrigger>
-                <TabsTrigger value="profile">Profile</TabsTrigger>
+                <TabsTrigger value="orders">{t("Orders")}</TabsTrigger>
+                <TabsTrigger value="wishlist">{t("Wishlist")}</TabsTrigger>
+                <TabsTrigger value="addresses">{t("Addresses")}</TabsTrigger>
+                <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="orders">
@@ -143,7 +145,7 @@ export function AccountPage() {
                             €{order.total.toLocaleString()}
                           </p>
                         </div>
-                        <Button variant="outline">View Details</Button>
+                        <Button variant="outline">{t("View Details")}</Button>
                       </div>
                     </div>
                   ))}
@@ -171,14 +173,14 @@ export function AccountPage() {
                   <div className="text-center py-12">
                     <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-muted-foreground">
-                      Your wishlist is empty
+                      {t("Your wishlist is empty")}
                     </p>
                     <Button
                       onClick={() => navigate("category", { category: "all" })}
                       variant="outline"
                       className="mt-4"
                     >
-                      Browse Products
+                      {t("Browse Products")}
                     </Button>
                   </div>
                 )}
@@ -214,7 +216,7 @@ export function AccountPage() {
 
               <TabsContent value="profile">
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h3 className="text-lg mb-6">Profile Information</h3>
+                  <h3 className="text-lg mb-6">{t("Profile Information")}</h3>
                   <form className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>

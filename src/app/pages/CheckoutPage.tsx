@@ -8,10 +8,12 @@ import { Label } from "../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Checkbox } from "../components/ui/checkbox";
 import { CreditCard, Wallet, Banknote, CheckCircle } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { navigate } = useNavigation();
+  const { t } = useLanguage();
   const [step, setStep] = useState<"info" | "payment" | "success">("info");
   const [paymentMethod, setPaymentMethod] = useState("paypal");
   const [sameAsShipping, setSameAsShipping] = useState(true);
@@ -60,13 +62,16 @@ export function CheckoutPage() {
                 <CheckCircle className="h-16 w-16 text-green-600" />
               </div>
             </div>
-            <h2 className="text-3xl mb-4">Order Placed Successfully!</h2>
+            <h2 className="text-3xl mb-4">{t("Order Placed Successfully!")}</h2>
             <p className="text-muted-foreground mb-8">
-              Thank you for your purchase. Your order confirmation has been sent
-              to your email.
+              {t(
+                "Thank you for your purchase. Your order confirmation has been sent to your email.",
+              )}
             </p>
             <div className="bg-muted/30 rounded-lg p-6 mb-8">
-              <p className="text-sm text-muted-foreground mb-2">Order Number</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                {t("Order Number")}
+              </p>
               <p className="text-2xl">
                 #DV{Math.floor(Math.random() * 100000)}
               </p>
@@ -76,7 +81,7 @@ export function CheckoutPage() {
               size="lg"
               className="w-full"
             >
-              Continue Shopping
+              {t("Continue Shopping")}
             </Button>
           </div>
         </div>
@@ -87,7 +92,7 @@ export function CheckoutPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl mb-8">Checkout</h1>
+        <h1 className="text-4xl mb-8">{t("Checkout")}</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
@@ -102,7 +107,7 @@ export function CheckoutPage() {
                 >
                   1
                 </div>
-                <div className="ml-2">Shipping Info</div>
+                <div className="ml-2">{t("Shipping Info")}</div>
               </div>
               <div className="flex-1 h-0.5 bg-border mx-4" />
               <div
@@ -113,14 +118,14 @@ export function CheckoutPage() {
                 >
                   2
                 </div>
-                <div className="ml-2">Payment</div>
+                <div className="ml-2">{t("Payment")}</div>
               </div>
             </div>
 
             {step === "info" && (
               <form onSubmit={handleSubmitInfo} className="space-y-6">
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h3 className="text-xl mb-4">Shipping Information</h3>
+                  <h3 className="text-xl mb-4">{t("Shipping Information")}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">First Name *</Label>
@@ -166,7 +171,7 @@ export function CheckoutPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="phone">Phone Number *</Label>
+                      <Label htmlFor="phone">{t("Phone Number")} *</Label>
                       <Input
                         id="phone"
                         type="tel"
@@ -181,7 +186,7 @@ export function CheckoutPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="address">Address *</Label>
+                      <Label htmlFor="address">{t("Address")} *</Label>
                       <Input
                         id="address"
                         required
@@ -195,7 +200,7 @@ export function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="city">City *</Label>
+                      <Label htmlFor="city">{t("City")} *</Label>
                       <Input
                         id="city"
                         required
@@ -209,7 +214,7 @@ export function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="state">State *</Label>
+                      <Label htmlFor="state">{t("State")} *</Label>
                       <Input
                         id="state"
                         required
@@ -223,7 +228,7 @@ export function CheckoutPage() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="pincode">Pincode *</Label>
+                      <Label htmlFor="pincode">{t("Pincode")} *</Label>
                       <Input
                         id="pincode"
                         required
@@ -261,7 +266,7 @@ export function CheckoutPage() {
             {step === "payment" && (
               <div className="space-y-6">
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h3 className="text-xl mb-4">Payment Method</h3>
+                  <h3 className="text-xl mb-4">{t("Payment Method")}</h3>
                   <RadioGroup
                     value={paymentMethod}
                     onValueChange={setPaymentMethod}
@@ -386,7 +391,7 @@ export function CheckoutPage() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
-              <h3 className="text-xl mb-4">Order Summary</h3>
+              <h3 className="text-xl mb-4">{t("Order Summary")}</h3>
 
               <div className="space-y-3 mb-4">
                 {items.map((item) => (

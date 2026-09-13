@@ -5,10 +5,12 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Trash2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function CartPage() {
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
   const { navigate } = useNavigation();
+  const { t } = useLanguage();
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
 
@@ -31,15 +33,15 @@ export function CartPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto text-center">
             <ShoppingBag className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
-            <h2 className="text-3xl mb-4">Your Cart is Empty</h2>
+            <h2 className="text-3xl mb-4">{t("Your Cart is Empty")}</h2>
             <p className="text-muted-foreground mb-8">
-              Looks like you haven't added any items to your cart yet.
+              {t("Looks like you haven't added any items to your cart yet.")}
             </p>
             <Button
               onClick={() => navigate("category", { category: "all" })}
               size="lg"
             >
-              Continue Shopping
+              {t("Continue Shopping")}
             </Button>
           </div>
         </div>
@@ -50,7 +52,7 @@ export function CartPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl mb-8">Shopping Cart</h1>
+        <h1 className="text-4xl mb-8">{t("Shopping Cart")}</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
@@ -93,8 +95,8 @@ export function CartPage() {
                           updateQuantity(item.id, item.quantity - 1)
                         }
                         className="p-2 hover:bg-background rounded-l-md transition-colors"
-                        title="Decrease quantity"
-                        aria-label="Decrease quantity"
+                        title={t("Decrease quantity")}
+                        aria-label={t("Decrease quantity")}
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -104,8 +106,8 @@ export function CartPage() {
                           updateQuantity(item.id, item.quantity + 1)
                         }
                         className="p-2 hover:bg-background rounded-r-md transition-colors"
-                        title="Increase quantity"
-                        aria-label="Increase quantity"
+                        title={t("Increase quantity")}
+                        aria-label={t("Increase quantity")}
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -117,8 +119,8 @@ export function CartPage() {
                   <button
                     onClick={() => removeItem(item.id)}
                     className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
-                    title="Remove item from cart"
-                    aria-label="Remove item from cart"
+                    title={t("Remove item from cart")}
+                    aria-label={t("Remove item from cart")}
                   >
                     <Trash2 className="h-5 w-5" />
                   </button>
@@ -131,23 +133,23 @@ export function CartPage() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
-              <h3 className="text-xl mb-6">Order Summary</h3>
+              <h3 className="text-xl mb-6">{t("Order Summary")}</h3>
 
               {/* Promo Code */}
               <div className="mb-6">
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Enter promo code"
+                    placeholder={t("Enter promo code")}
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                   />
                   <Button onClick={applyPromo} variant="outline">
-                    Apply
+                    {t("Apply")}
                   </Button>
                 </div>
                 {discount > 0 && (
                   <p className="text-sm text-green-600 mt-2">
-                    Promo code applied!
+                    {t("Promo code applied!")}
                   </p>
                 )}
               </div>
@@ -155,23 +157,23 @@ export function CartPage() {
               {/* Price Breakdown */}
               <div className="space-y-3 mb-6 pb-6 border-b border-border">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">{t("Subtotal")}</span>
                   <span>€{totalPrice.toLocaleString()}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
+                    <span>{t("Discount")}</span>
                     <span>-€{discount.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span>{shipping === 0 ? "FREE" : `€${shipping}`}</span>
+                  <span className="text-muted-foreground">{t("Shipping")}</span>
+                  <span>{shipping === 0 ? t("FREE") : `€${shipping}`}</span>
                 </div>
               </div>
 
               <div className="flex justify-between mb-6">
-                <span>Total</span>
+                <span>{t("Total")}</span>
                 <span className="text-2xl text-primary">
                   €{finalTotal.toLocaleString()}
                 </span>
@@ -182,14 +184,14 @@ export function CartPage() {
                 className="w-full mb-3"
                 size="lg"
               >
-                Proceed to Checkout
+                {t("Proceed to Checkout")}
               </Button>
               <Button
                 onClick={() => navigate("category", { category: "all" })}
                 variant="outline"
                 className="w-full"
               >
-                Continue Shopping
+                {t("Continue Shopping")}
               </Button>
 
               {totalPrice < 2999 && (

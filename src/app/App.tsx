@@ -15,6 +15,7 @@ import { AccountPage } from "./pages/AccountPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
 import { WishlistProvider } from "./contexts/WishlistContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 function AppContent() {
   const { currentPage, params } = useNavigation();
@@ -71,11 +72,13 @@ function AppContent() {
 export default function App() {
   return (
     <NavigationProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <AppContent />
-        </WishlistProvider>
-      </CartProvider>
+      <LanguageProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <AppContent />
+          </WishlistProvider>
+        </CartProvider>
+      </LanguageProvider>
     </NavigationProvider>
   );
 }

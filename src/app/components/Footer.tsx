@@ -6,8 +6,10 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="bg-gradient-to-r from-primary to-[#610000] text-background pt-16 ">
       <div className="container mx-auto px-4">
@@ -16,18 +18,17 @@ export function Footer() {
           <div>
             <div className="text-2xl mb-4 text-secondary flex items-center gap-2">
               <img src="src\images\logo-icon.png" width={80} alt="" />
-              <h3 className="text-niorra-red" style={{ color: "#ffe211" }}>NIORRA</h3>
+              <h3 className="text-niorra-red" style={{ color: "#ffe211" }}>
+                NIORRA
+              </h3>
             </div>
             <p className="text-lg font-normal mb-1">
-              We started Niorra in 2012,
+              {t("We started Niorra in 2012,")}
             </p>
             <p className="text-background/80 mb-4 pr-6">
-              Since our first day we've brought the best selection of Indian
-              Bollywood Textiles and Jewellery to our customers. Our name has
-              become synonymous with quality throughout the entire Frankfurt,
-              Germany. We do our best to ensure a permanent variety of fantastic
-              items along with unique limited edition and seasonal items to fit
-              any budget.
+              {t(
+                "Since our first day we've brought the best selection of Indian Bollywood Textiles and Jewellery to our customers. Our name has become synonymous with quality throughout the entire Frankfurt, Germany. We do our best to ensure a permanent variety of fantastic items along with unique limited edition and seasonal items to fit any budget.",
+              )}
             </p>
             <div className="flex gap-3">
               <a
@@ -53,14 +54,14 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="mb-4">Collections</h4>
+            <h4 className="mb-4">{t("Collections")}</h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Sarees
+                  {t("Sarees")}
                 </a>
               </li>
               <li>
@@ -68,7 +69,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Blouses
+                  {t("Blouses")}
                 </a>
               </li>
               <li>
@@ -76,7 +77,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Kutis
+                  {t("Kutis")}
                 </a>
               </li>
               <li>
@@ -84,7 +85,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Skirts
+                  {t("Skirts")}
                 </a>
               </li>
               <li>
@@ -92,7 +93,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Kids
+                  {t("Kids")}
                 </a>
               </li>
             </ul>
@@ -100,14 +101,14 @@ export function Footer() {
 
           {/* Customer Service */}
           <div>
-            <h4 className="mb-4">Quick Links</h4>
+            <h4 className="mb-4">{t("Quick Links")}</h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  About Us
+                  {t("About Us")}
                 </a>
               </li>
               <li>
@@ -115,7 +116,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Our Story
+                  {t("Our Story")}
                 </a>
               </li>
               <li>
@@ -123,7 +124,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Collections
+                  {t("Collections")}
                 </a>
               </li>
               <li>
@@ -131,7 +132,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Blog
+                  {t("Blog")}
                 </a>
               </li>
               <li>
@@ -139,7 +140,7 @@ export function Footer() {
                   href="#"
                   className="text-background/80 hover:text-secondary transition-colors"
                 >
-                  Contact Us
+                  {t("Contact Us")}
                 </a>
               </li>
             </ul>
@@ -147,7 +148,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="mb-4">Visit Our Store</h4>
+            <h4 className="mb-4">{t("Visit Our Store")}</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-background/80">
                 <MapPin className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
@@ -168,20 +169,20 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 pb-3 border-t border-background/20 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-background/60 text-sm">
-            © 2026 Niorra. All rights reserved.
+            © 2026 Niorra. {t("All rights reserved.")}
           </p>
           <div className="flex gap-6  text-sm">
             <a
               href="#"
               className="text-background/60 hover:text-secondary transition-colors"
             >
-              Privacy Policy
+              {t("Privacy Policy")}
             </a>
             <a
               href="#"
               className="text-background/60 hover:text-secondary transition-colors"
             >
-              Terms & Conditions
+              {t("Terms & Conditions")}
             </a>
             {/* <a
               href="#"

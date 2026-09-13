@@ -6,6 +6,7 @@ import { useNavigation } from "../contexts/NavigationContext";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useState } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface ProductCardProps {
   id: string;
@@ -42,6 +43,7 @@ export function ProductCard({
   const { navigate } = useNavigation();
   const { addItem } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { t } = useLanguage();
   const [isRemoving, setIsRemoving] = useState(false);
   const isWishlisted = isInWishlist(id);
 
@@ -92,10 +94,12 @@ export function ProductCard({
             disabled={isRemoving}
             className={`p-2 rounded-full shadow-lg transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 cursor-pointer backdrop-blur-sm ${isWishlisted ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-background/95 hover:bg-primary hover:text-primary-foreground"}`}
             aria-label={
-              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+              isWishlisted ? t("Remove from wishlist") : t("Add to wishlist")
             }
             aria-pressed={isWishlisted}
-            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            title={
+              isWishlisted ? t("Remove from wishlist") : t("Add to wishlist")
+            }
           >
             <Heart
               className={`h-4 w-4 ${isWishlisted ? "fill-current niorra-heart-glow" : ""}`}
@@ -110,7 +114,7 @@ export function ProductCard({
             className="w-full mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            Add to Cart
+            {t("Add to Cart")}
           </Button>
         </div>
       </div>
@@ -120,15 +124,15 @@ export function ProductCard({
         <span className="niorra-heritage-mark" aria-hidden="true" />
         {productBadges?.includes("Bestseller") ? (
           <Badge className="niorra-badge-reveal bg-secondary text-secondary-foreground">
-            Bestseller
+            {t("Bestseller")}
           </Badge>
         ) : productBadges?.includes("New") ? (
           <Badge className="niorra-badge-reveal bg-secondary text-secondary-foreground">
-            New Arrival
+            {t("New Arrival")}
           </Badge>
         ) : (
           <Badge className="niorra-badge-reveal border-secondary/60 bg-background/70 text-primary">
-            Niorra Edit
+            {t("Niorra Edit")}
           </Badge>
         )}
       </div>
