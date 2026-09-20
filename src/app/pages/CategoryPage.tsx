@@ -295,14 +295,18 @@ export function CategoryPage({
     sortBy,
   ]);
 
+  const categoryInfo = allCategories.find((cat) => cat.id === category);
   const categoryTitle =
     category && category !== "all"
-      ? categoryTitleMap[category] || getReadableCategoryTitle(category)
-      : "All Categories Collection";
+      ? t(
+          categoryTitleMap[category] ||
+            categoryInfo?.name ||
+            getReadableCategoryTitle(category),
+        )
+      : t("All Categories Collection");
 
   const getCategoryGroupName = () => {
     if (!category || category === "all") return null;
-    const categoryInfo = allCategories.find((cat) => cat.id === category);
     return categoryInfo?.group || null;
   };
 
@@ -334,15 +338,15 @@ export function CategoryPage({
           <div className="mb-4">
             {getCategoryGroupName() && (
               <p className="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
-                {getCategoryGroupName()}
+                {t(getCategoryGroupName() || "")}
               </p>
             )}
             <h1 className="text-4xl md:text-5xl font-bold">{categoryTitle}</h1>
           </div>
           <p className="text-muted-foreground">
             {loading
-              ? "Loading products..."
-              : `Showing ${filteredProducts.length} products`}
+              ? t("Loading products...")
+              : `${t("Showing")} ${filteredProducts.length} ${t("products")}`}
           </p>
         </div>
 
@@ -351,7 +355,7 @@ export function CategoryPage({
             {showSareeCollections && sareeCollections.length > 0 && (
               <div className="mb-5">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
-                  Saree Collections
+                  {t("Saree Collections")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {sareeCollections.map((collection) => {
@@ -383,7 +387,7 @@ export function CategoryPage({
 
             <div className="space-y-3">
               <span className="inline-flex border-l-2 border-secondary bg-secondary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                Shop by Occasion
+                {t("Shop by Occasion")}
               </span>
               <div className="flex flex-wrap items-center gap-2">
                 {productOccasions.map((occasion) => {
@@ -406,7 +410,7 @@ export function CategoryPage({
                         )
                       }
                     >
-                      {occasion.name}
+                      {t(occasion.name)}
                     </Button>
                   );
                 })}
@@ -423,7 +427,7 @@ export function CategoryPage({
                     }
                   }}
                 >
-                  Clear
+                  {t("Clear")}
                 </Button>
               )}
             </div>
@@ -438,7 +442,7 @@ export function CategoryPage({
               {categories.map((group) => (
                 <div key={group.name}>
                   <h4 className="text-lg font-semibold text-primary mb-4 uppercase tracking-wide">
-                    {group.name}
+                    {t(group.name)}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {group.items.map((item) => {
@@ -454,7 +458,7 @@ export function CategoryPage({
                             <div className="text-center p-4 group-hover:scale-110 transition-transform duration-300">
                               <div className="text-3xl mb-2">👗</div>
                               <p className="text-xs font-semibold text-foreground line-clamp-2">
-                                {item.name}
+                                {t(item.name)}
                               </p>
                             </div>
                           </div>
@@ -464,7 +468,7 @@ export function CategoryPage({
                               variant="secondary"
                               className="text-xs w-fit"
                             >
-                              {itemCount} items
+                              {itemCount} {t("items")}
                             </Badge>
                           </div>
                         </div>
@@ -570,7 +574,7 @@ export function CategoryPage({
                   setPriceRange([0, 1000]);
                 }}
               >
-                Clear All Filters
+                {t("Clear All Filters")}
               </Button>
             </div>
           </aside>
@@ -586,7 +590,7 @@ export function CategoryPage({
                 className="lg:hidden"
               >
                 <Filter className="h-4 w-4 mr-2" />
-                {showFilters ? "Hide" : "Show"} Filters
+                {t(showFilters ? "Hide" : "Show")} {t("Filters")}
               </Button>
 
               <div className="flex items-center gap-2 ml-auto">
@@ -599,10 +603,10 @@ export function CategoryPage({
                     <SelectItem value="popular">{t("Popular")}</SelectItem>
                     <SelectItem value="new">{t("New Arrivals")}</SelectItem>
                     <SelectItem value="price-low">
-                      Price: Low to High
+                      {t("Price: Low to High")}
                     </SelectItem>
                     <SelectItem value="price-high">
-                      Price: High to Low
+                      {t("Price: High to Low")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -613,7 +617,7 @@ export function CategoryPage({
             {loading ? (
               <div className="text-center py-20">
                 <p className="text-muted-foreground text-lg">
-                  Loading products...
+                  {t("Loading products...")}
                 </p>
               </div>
             ) : filteredProducts.length > 0 ? (
@@ -648,7 +652,7 @@ export function CategoryPage({
             ) : (
               <div className="text-center py-20">
                 <p className="text-muted-foreground text-lg mb-4">
-                  No products found matching your filters.
+                  {t("No products found matching your filters.")}
                 </p>
                 <Button
                   variant="outline"
@@ -660,7 +664,7 @@ export function CategoryPage({
                     setPriceRange([0, 1000]);
                   }}
                 >
-                  Clear Filters
+                  {t("Clear Filters")}
                 </Button>
               </div>
             )}
