@@ -162,7 +162,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 text-background/80">
                 <Mail className="h-5 w-5 text-secondary flex-shrink-0" />
-                <span>hello@niorra.com</span>
+                <span>info@niorra.eu</span>
               </li>
             </ul>
           </div>

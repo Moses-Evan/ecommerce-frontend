@@ -71,7 +71,7 @@ export function ContactPage() {
               </div>
             </div>
             <h3 className="text-lg mb-2">{t("Email Us")}</h3>
-            <p className="text-sm text-muted-foreground">hello@niorra.com</p>
+            <p className="text-sm text-muted-foreground">info@niorra.eu</p>
           </div>
         </div>
 

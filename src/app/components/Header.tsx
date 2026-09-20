@@ -188,14 +188,14 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setLanguage("de")}
-                className={`rounded-full px-2 py-1 transition-colors ${language === "de" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                className={`rounded-full px-2 py-1 cursor-pointer transition-colors ${language === "de" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
                 DE
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage("en")}
-                className={`rounded-full px-2 py-1 transition-colors ${language === "en" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                className={`rounded-full px-2 py-1 cursor-pointer transition-colors ${language === "en" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
                 EN
               </button>
