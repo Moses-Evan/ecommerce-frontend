@@ -1,6 +1,10 @@
 import * as React from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useLanguage } from "../contexts/LanguageContext";
+import hero1 from "../../images/hero/hero-1.png";
+import hero2 from "../../images/hero/hero-2.png";
+import hero3 from "../../images/hero/hero-3.png";
+import hero4 from "../../images/hero/hero-4.png";
 import {
   Carousel,
   CarouselContent,
@@ -12,7 +16,7 @@ import {
 
 const heroSlides = [
   {
-    src: "src/images/hero/hero-1.png",
+    src: hero1,
     alt: "Saree collection in warm tones",
     label: "New Collection 2026",
     headline: "Elegance Woven with Tradition",
@@ -20,7 +24,7 @@ const heroSlides = [
       "Experience premium sarees that blend heritage craftsmanship with bold modern flair.",
   },
   {
-    src: "src/images/hero/hero-2.png",
+    src: hero2,
     alt: "Elegant saree drapes with floral detailing",
     label: "Festival Ready",
     headline: "Drapes That Tell a Story",
@@ -28,7 +32,7 @@ const heroSlides = [
       "From wedding mandaps to evening soirées, every piece embraces timeless charm.",
   },
   {
-    src: "src/images/hero/hero-3.png",
+    src: hero3,
     alt: "Luxury silk saree styled for modern fashion",
     label: "Luxury Silk",
     headline: "Soft, Rich, and Radiant",
@@ -36,7 +40,7 @@ const heroSlides = [
       "Feel the luxury of silk sarees finished with delicate motifs and rich hues.",
   },
   {
-    src: "src/images/hero/hero-4.png",
+    src: hero4,
     alt: "Saree outfit with contemporary accessories",
     label: "Curated for You",
     headline: "Crafted to Celebrate You",

@@ -6,6 +6,7 @@ import { useWishlist } from "../contexts/WishlistContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { CollectionGroupDropdown } from "./CategoryDropdown";
 import { categories } from "../data/categories";
+import logoIcon from "../../images/logo-icon.png";
 import {
   Sheet,
   SheetTrigger,
@@ -144,7 +145,7 @@ export function Header() {
           >
             {/* <h1 className="text-3xl text-primary tracking-tight">Niorra</h1> */}
             <div className="text-3xl text-primary tracking-tight flex items-center gap-2">
-              <img src="src/images/logo-icon.png" width={80} alt="" />
+              <img src={logoIcon} width={80} alt="" />
               <h1 className="text-niorra-red">NIORRA</h1>
             </div>
           </div>

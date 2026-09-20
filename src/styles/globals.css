@@ -4,21 +4,21 @@
 
 @font-face {
   font-family: "Algerian";
-  src: url("src/fonts/Algerian Regular.ttf") format("truetype");
+  src: url("../fonts/Algerian%20Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Ranade";
-  src: url("src/fonts/Ranade-Variable.ttf") format("truetype");
+  src: url("../fonts/Ranade-Variable.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Zodiak";
-  src: url("src/fonts/Zodiak-Variable.ttf") format("truetype");
+  src: url("../fonts/Zodiak-Variable.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;

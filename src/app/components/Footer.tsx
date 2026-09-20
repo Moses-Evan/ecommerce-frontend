@@ -7,6 +7,8 @@ import {
   MapPin,
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import logoIcon from "../../images/logo-icon.png";
+import footerImage from "../../images/footer.png";
 
 export function Footer() {
   const { t } = useLanguage();
@@ -17,7 +19,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="text-2xl mb-4 text-secondary flex items-center gap-2">
-              <img src="src\images\logo-icon.png" width={80} alt="" />
+              <img src={logoIcon} width={80} alt="" />
               <h3 className="text-niorra-red" style={{ color: "#ffe211" }}>
                 NIORRA
               </h3>
@@ -194,7 +196,7 @@ export function Footer() {
         </div>
       </div>
       <div>
-        <img src="src\images\footer.png" alt="Niorra" className="w-full" />
+        <img src={footerImage} alt="Niorra" className="w-full" />
       </div>
     </footer>
   );

@@ -6,6 +6,9 @@ import { ProductCard } from "./ProductCard";
 import { Product } from "../../types/Product";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import summerCollectionsImage from "../../images/SummerCollections.png";
+import collectionsImage from "../../images/collec.png";
+import collectionsImage2 from "../../images/collec2.png";
 
 interface CollectionItem {
   id: string;
@@ -33,15 +36,11 @@ const normalizeCategory = (value: string) =>
 const sortNewestFirst = (a: Product, b: Product) =>
   new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 
-const collectionThumbnail = "src/images/SummerCollections.png";
-const collectionThumbnail2 = "src/images/collec.png";
-const collectionThumbnail3 = "src/images/collec2.png";
-const collectionThumbnail4 = "src/images/SummerCollections.png";
 const collectionThumbnails = [
-  collectionThumbnail,
-  collectionThumbnail2,
-  collectionThumbnail3,
-  collectionThumbnail4,
+  summerCollectionsImage,
+  collectionsImage,
+  collectionsImage2,
+  summerCollectionsImage,
 ];
 
 const buildCollectionsFromProducts = (products: Product[] = []) => {

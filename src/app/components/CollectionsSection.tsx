@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import ImageWithFallback from '../components/ImageWithFallback';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import ImageWithFallback from "../components/ImageWithFallback";
+import fallbackImage from "../../images/SummerCollections.png";
 
 interface Collection {
   id: number;
@@ -20,34 +21,40 @@ const CollectionsSection = () => {
         // In a real app, this would be an API call:
         // const response = await api getCollections();
         // setCollections(response.data);
-        
+
         // Mock data for demonstration
         setTimeout(() => {
           const mockCollections: Collection[] = [
             {
               id: 1,
               name: "Summer Collections",
-              description: "Lightweight and breathable sarees perfect for the hot season",
-              image: "https://images.unsplash.com/photo-1607990281513-2c110a250c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxMHx8c2FyZWV8ZW58MXx8fHwxNzU5NTkwMTkzfDA&ixlib=rb-4.1.0&q=80&w=1080"
+              description:
+                "Lightweight and breathable sarees perfect for the hot season",
+              image:
+                "https://images.unsplash.com/photo-1607990281513-2c110a250c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxMHx8c2FyZWV8ZW58MXx8fHwxNzU5NTkwMTkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
               id: 2,
               name: "Silk Collection",
-              description: "Elegant silk sarees with intricate designs and luxurious textures",
-              image: "https://images.unsplash.com/photo-1607990281513-2c110a250c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxMHx8c2FyZWV8ZW58MXx8fHwxNzU5NTkwMTkzfDA&ixlib=rb-4.1.0&q=80&w=1080"
+              description:
+                "Elegant silk sarees with intricate designs and luxurious textures",
+              image:
+                "https://images.unsplash.com/photo-1607990281513-2c110a250c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxMHx8c2FyZWV8ZW58MXx8fHwxNzU5NTkwMTkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
               id: 3,
               name: "Traditional Sarees",
-              description: "Classic sarees that represent the rich heritage of Indian textiles",
-              image: "https://images.unsplash.com/photo-1607990281513-2c110a250c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxMHx8c2FyZWV8ZW58MXx8fHwxNzU5NTkwMTkzfDA&ixlib=rb-4.1.0&q=80&w=1080"
-            }
+              description:
+                "Classic sarees that represent the rich heritage of Indian textiles",
+              image:
+                "https://images.unsplash.com/photo-1607990281513-2c110a250c2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxMHx8c2FyZWV8ZW58MXx8fHwxNzU5NTkwMTkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+            },
           ];
           setCollections(mockCollections);
           setIsLoading(false);
         }, 800);
       } catch (error) {
-        console.error('Error fetching collections:', error);
+        console.error("Error fetching collections:", error);
         setIsLoading(false);
       }
     };
@@ -64,7 +71,10 @@ const CollectionsSection = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20">
+              <div
+                key={i}
+                className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20"
+              >
                 <div className="h-64 bg-white/20"></div>
                 <div className="p-6">
                   <div className="h-8 bg-white/20 rounded w-3/4 mb-4"></div>
@@ -109,7 +119,7 @@ const CollectionsSection = () => {
                   src={collection.image}
                   alt={collection.name}
                   className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
-                  fallbackSrc="/placeholder-saree.jpg"
+                  fallbackSrc={fallbackImage}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <motion.div
