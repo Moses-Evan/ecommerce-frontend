@@ -1,43 +1,9 @@
-import { useState } from "react";
-import { useNavigation } from "../contexts/NavigationContext";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../components/ui/tabs";
 import { useLanguage } from "../contexts/LanguageContext";
+import { getGoogleAuthUrl } from "../../api/auth";
 
 export function LoginPage() {
-  const { navigate } = useNavigation();
   const { t } = useLanguage();
-  const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signupData, setSignupData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Mock login - in real app, this would call an API
-    navigate("account");
-  };
-
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (signupData.password !== signupData.confirmPassword) {
-      alert(t("Passwords don't match!"));
-      return;
-    }
-    // Mock signup - in real app, this would call an API
-    navigate("account");
-  };
 
   return (
     <div className="min-h-screen py-12">
@@ -45,140 +11,20 @@ export function LoginPage() {
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl mb-4">{t("Welcome Back")}</h1>
-            <p className="text-muted-foreground">
-              {t("Login or create an account to continue")}
-            </p>
+            <p className="text-muted-foreground">{t("Sign in to continue")}</p>
           </div>
 
-          <Tabs
-            defaultValue="login"
-            className="bg-card border border-border rounded-lg p-6"
-          >
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">{t("Login")}</TabsTrigger>
-              <TabsTrigger value="signup">{t("Sign Up")}</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <Label htmlFor="login-email">{t("Email")}</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    required
-                    value={loginData.email}
-                    onChange={(e) =>
-                      setLoginData({ ...loginData, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="login-password">{t("Password")}</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    required
-                    value={loginData.password}
-                    onChange={(e) =>
-                      setLoginData({ ...loginData, password: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" />
-                    <span>{t("Remember me")}</span>
-                  </label>
-                  <a href="#" className="text-primary hover:underline">
-                    {t("Forgot password?")}
-                  </a>
-                </div>
-                <Button type="submit" className="w-full" size="lg">
-                  {t("Login")}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">{t("First Name")}</Label>
-                    <Input
-                      id="firstName"
-                      required
-                      value={signupData.firstName}
-                      onChange={(e) =>
-                        setSignupData({
-                          ...signupData,
-                          firstName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">{t("Last Name")}</Label>
-                    <Input
-                      id="lastName"
-                      required
-                      value={signupData.lastName}
-                      onChange={(e) =>
-                        setSignupData({
-                          ...signupData,
-                          lastName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="signup-email">{t("Email")}</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    required
-                    value={signupData.email}
-                    onChange={(e) =>
-                      setSignupData({ ...signupData, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signup-password">{t("Password")}</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    required
-                    value={signupData.password}
-                    onChange={(e) =>
-                      setSignupData({ ...signupData, password: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="confirm-password">
-                    {t("Confirm Password")}
-                  </Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    required
-                    value={signupData.confirmPassword}
-                    onChange={(e) =>
-                      setSignupData({
-                        ...signupData,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <Button type="submit" className="w-full" size="lg">
-                  {t("Create Account")}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <div className="bg-card border border-border rounded-lg p-6">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              size="lg"
+              onClick={() => window.location.assign(getGoogleAuthUrl())}
+            >
+              {t("Continue with Google")}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

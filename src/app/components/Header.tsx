@@ -4,6 +4,7 @@ import { useNavigation } from "../contexts/NavigationContext";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { getAccessToken } from "../../api/auth";
 import { CollectionGroupDropdown } from "./CategoryDropdown";
 import { categories } from "../data/categories";
 import logoIcon from "../../images/logo-icon.png";
@@ -22,6 +23,7 @@ export function Header() {
   const { productIds } = useWishlist();
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const openAccount = () => navigate(getAccessToken() ? "account" : "login");
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
@@ -122,7 +124,7 @@ export function Header() {
               <div className="mt-6 border-t border-border px-4 pt-4">
                 <SheetClose asChild>
                   <button
-                    onClick={() => navigate("account")}
+                    onClick={openAccount}
                     className="w-full rounded-md border border-border px-4 py-3 text-left text-foreground hover:bg-muted/80 transition-colors"
                   >
                     {t("Account")}
@@ -221,7 +223,7 @@ export function Header() {
               )}
             </button>
             <button
-              onClick={() => navigate("account")}
+              onClick={openAccount}
               aria-label={t("View account")}
               className="hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
             >
