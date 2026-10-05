@@ -644,6 +644,7 @@ export function CategoryPage({
                         productBadges={product.productBadges}
                         productFabricType={product.productFabricType}
                         productDiscount={product.productDiscount}
+                        productStock={product.productStock}
                       />
                     </motion.div>
                   ))}

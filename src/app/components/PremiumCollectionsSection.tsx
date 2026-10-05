@@ -200,6 +200,7 @@ export function PremiumCollectionsSection({
                         productBadges={product.productBadges}
                         productFabricType={product.productFabricType}
                         productDiscount={product.productDiscount}
+                        productStock={product.productStock}
                       />
                     ))}
                   </div>

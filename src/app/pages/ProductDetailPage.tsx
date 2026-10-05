@@ -140,14 +140,16 @@ export function ProductDetailPage({
     relatedProducts.length > 0 ? relatedProducts : fetchedRelatedProducts;
 
   const handleAddToCart = () => {
-    addItem({
+    const added = addItem({
       id: product.id,
       name: product.productName,
       price: product.productSellingPrice,
       image: product.productImages[0],
       fabric: product.productFabricType,
       quantity,
+      productStock: product.productStock,
     });
+    if (!added) return;
     setWasAdded(true);
     window.setTimeout(() => setWasAdded(false), 1400);
   };
@@ -406,7 +408,10 @@ export function ProductDetailPage({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setQuantity(quantity + 1)}
+                  onClick={() =>
+                    setQuantity(Math.min(product.productStock, quantity + 1))
+                  }
+                  disabled={quantity >= product.productStock}
                   className="cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
@@ -420,6 +425,7 @@ export function ProductDetailPage({
                 size="lg"
                 className="mt-0 h-14 flex-1"
                 onClick={handleAddToCart}
+                disabled={product.productStock <= 0}
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
@@ -439,7 +445,13 @@ export function ProductDetailPage({
                     ) : (
                       <ShoppingCart className="w-5 h-5" />
                     )}
-                    {t(wasAdded ? "Added to Cart" : "Add To Cart")}
+                    {t(
+                      product.productStock <= 0
+                        ? "Out of Stock"
+                        : wasAdded
+                          ? "Added to Cart"
+                          : "Add To Cart",
+                    )}
                   </motion.span>
                 </AnimatePresence>
               </Button>
@@ -621,6 +633,7 @@ export function ProductDetailPage({
                   productBadges={item.productBadges}
                   productFabricType={item.productFabricType}
                   productDiscount={item.productDiscount}
+                  productStock={item.productStock}
                 />
               ))}
             </div>

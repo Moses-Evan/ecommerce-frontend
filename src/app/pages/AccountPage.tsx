@@ -254,6 +254,7 @@ export function AccountPage() {
                           productBadges={product.productBadges}
                           productFabricType={product.productFabricType}
                           productDiscount={product.productDiscount}
+                          productStock={product.productStock}
                         />
                       ))}
                     </div>

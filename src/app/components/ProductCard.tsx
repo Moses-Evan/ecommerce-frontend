@@ -24,6 +24,7 @@ interface ProductCardProps {
 
   productFabricType?: string;
   productDiscount: number;
+  productStock: number;
 }
 
 export function ProductCard({
@@ -35,6 +36,7 @@ export function ProductCard({
   productBadges,
   productFabricType,
   productDiscount,
+  productStock,
 }: ProductCardProps) {
   // const discount = productMrp
   //   ? Math.round(((productMrp - productSellingPrice) / productMrp) * 100)
@@ -68,13 +70,15 @@ export function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    addItem({
+    const added = addItem({
       id,
       name: productName,
       price: productSellingPrice,
       image: productImages?.[0],
       fabric: productFabricType,
+      productStock,
     });
+    if (!added) return;
     setWasAdded(true);
     window.setTimeout(() => setWasAdded(false), 1400);
   };
@@ -116,6 +120,7 @@ export function ProductCard({
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform">
           <Button
             onClick={handleAddToCart}
+            disabled={productStock <= 0}
             className="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -136,7 +141,13 @@ export function ProductCard({
                 ) : (
                   <ShoppingCart className="h-4 w-4" />
                 )}
-                {t(wasAdded ? "Added to Cart" : "Add to Cart")}
+                {t(
+                  productStock <= 0
+                    ? "Out of Stock"
+                    : wasAdded
+                      ? "Added to Cart"
+                      : "Add to Cart",
+                )}
               </motion.span>
             </AnimatePresence>
           </Button>

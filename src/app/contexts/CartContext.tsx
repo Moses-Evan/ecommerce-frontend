@@ -12,12 +12,15 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  productStock: number;
   fabric?: string;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
+  addItem: (
+    item: Omit<CartItem, "quantity"> & { quantity?: number },
+  ) => boolean;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -58,7 +61,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (
     item: Omit<CartItem, "quantity"> & { quantity?: number },
-  ) => {
+  ): boolean => {
+    if (item.productStock <= 0) return false;
+
     setItems((prev) => {
       const existingItem = prev.find((i) => i.id === item.id);
       if (existingItem) {
@@ -70,6 +75,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, quantity: item.quantity || 1 }];
     });
+    return true;
   };
 
   const removeItem = (id: string) => {
