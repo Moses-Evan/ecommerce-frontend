@@ -423,12 +423,6 @@ h6 {
   }
 }
 
-@layer base {
-  .page-transition {
-    animation: page-fade-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-}
-
 .text-niorra-red {
   font-family: "Algerian", sans-serif;
   color: #b30220;

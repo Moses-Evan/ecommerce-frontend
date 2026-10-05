@@ -1,6 +1,7 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useEffect,
   useState,
   ReactNode,
@@ -12,6 +13,7 @@ type Page =
   | "product"
   | "cart"
   | "checkout"
+  | "paypal-return"
   | "login"
   | "signup"
   | "account"
@@ -46,12 +48,57 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const initialState = window.history.state as NavigationState | null;
+    const isPayPalReturn =
+      window.location.pathname.endsWith("/checkout/paypal/return") ||
+      window.location.pathname.endsWith("/checkout/paypal/cancel") ||
+      window.location.pathname.endsWith("/paypal-return");
 
-    if (initialState?.page) {
+    if (isPayPalReturn) {
+      const paypalReturnState: NavigationState = {
+        page: "paypal-return",
+        params: {},
+      };
+      setCurrentPage(paypalReturnState.page);
+      setParams(paypalReturnState.params);
+      window.history.replaceState(paypalReturnState, "", window.location.href);
+    } else if (initialState?.page) {
       setCurrentPage(initialState.page);
       setParams(initialState.params || {});
     } else {
-      window.history.replaceState(defaultNavigationState, "", "#home");
+      const hash = window.location.hash.slice(1);
+      const requestedPage = hash.split("?")[0] as Page;
+      const hashParams = new URLSearchParams(hash.split("?")[1] || "");
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasPayPalReturn =
+        window.location.pathname.endsWith("/paypal-return") ||
+        urlParams.has("token") ||
+        urlParams.has("PayerID") ||
+        hashParams.has("token") ||
+        hashParams.has("PayerID");
+      const pages: Page[] = [
+        "home",
+        "category",
+        "product",
+        "cart",
+        "checkout",
+        "paypal-return",
+        "login",
+        "signup",
+        "account",
+        "about",
+        "contact",
+      ];
+      const page =
+        requestedPage === "paypal-return" ||
+        (hasPayPalReturn && sessionStorage.getItem("pendingPayPalOrderId"))
+          ? "paypal-return"
+          : pages.includes(requestedPage)
+            ? requestedPage
+            : defaultNavigationState.page;
+      const initialRoute: NavigationState = { page, params: {} };
+      setCurrentPage(page);
+      setParams(initialRoute.params);
+      window.history.replaceState(initialRoute, "", window.location.href);
     }
 
     const handlePopState = (event: PopStateEvent) => {
@@ -65,17 +112,16 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const navigate = (page: Page, newParams?: Record<string, any>) => {
-    const nextState: NavigationState = {
-      page,
-      params: newParams || {},
-    };
-
-    setCurrentPage(page);
-    setParams(nextState.params);
-    window.history.pushState(nextState, "", `#${page}`);
-    window.scrollTo(0, 0);
-  };
+  const navigate = useCallback(
+    (page: Page, newParams?: Record<string, any>) => {
+      const nextState: NavigationState = { page, params: newParams || {} };
+      setCurrentPage(page);
+      setParams(nextState.params);
+      window.history.pushState(nextState, "", `#${page}`);
+      window.scrollTo(0, 0);
+    },
+    [],
+  );
 
   return (
     <NavigationContext.Provider value={{ currentPage, params, navigate }}>

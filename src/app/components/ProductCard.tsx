@@ -1,4 +1,5 @@
-import { Heart, ShoppingCart } from "lucide-react";
+import { Check, Heart, ShoppingCart } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -45,6 +46,8 @@ export function ProductCard({
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { t } = useLanguage();
   const [isRemoving, setIsRemoving] = useState(false);
+  const [wasAdded, setWasAdded] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const isWishlisted = isInWishlist(id);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
@@ -72,6 +75,8 @@ export function ProductCard({
       image: productImages?.[0],
       fabric: productFabricType,
     });
+    setWasAdded(true);
+    window.setTimeout(() => setWasAdded(false), 1400);
   };
 
   return (
@@ -111,10 +116,29 @@ export function ProductCard({
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform">
           <Button
             onClick={handleAddToCart}
-            className="w-full mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
+            className="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
           >
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            {t("Add to Cart")}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={wasAdded ? "added" : "add"}
+                initial={{
+                  opacity: 0,
+                  y: prefersReducedMotion ? 0 : 6,
+                  scale: prefersReducedMotion ? 1 : 0.94,
+                }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -6 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.18 }}
+                className="inline-flex items-center gap-2"
+              >
+                {wasAdded ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <ShoppingCart className="h-4 w-4" />
+                )}
+                {t(wasAdded ? "Added to Cart" : "Add to Cart")}
+              </motion.span>
+            </AnimatePresence>
           </Button>
         </div>
       </div>

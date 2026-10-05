@@ -1,5 +1,6 @@
 import { ShoppingCart, Search, Menu, Heart, User } from "lucide-react";
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
@@ -23,6 +24,7 @@ export function Header() {
   const { productIds } = useWishlist();
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const prefersReducedMotion = useReducedMotion();
   const openAccount = () => navigate(getAccessToken() ? "account" : "login");
 
   return (
@@ -231,14 +233,33 @@ export function Header() {
             </button>
             <button
               onClick={() => navigate("cart")}
+              aria-label={`${t("Cart")}${totalItems ? ` (${totalItems})` : ""}`}
               className="p-2 hover:bg-accent/10 rounded-full transition-colors relative cursor-pointer"
             >
               <ShoppingCart className="h-5 w-5" />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
+              <AnimatePresence initial={false}>
+                {totalItems > 0 && (
+                  <motion.span
+                    key={totalItems}
+                    initial={{
+                      opacity: 0,
+                      scale: prefersReducedMotion ? 1 : 0.5,
+                      y: prefersReducedMotion ? 0 : 3,
+                    }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.7 }}
+                    transition={{
+                      duration: prefersReducedMotion ? 0 : 0.2,
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 24,
+                    }}
+                    className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-xs text-secondary-foreground"
+                  >
+                    {totalItems}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </div>

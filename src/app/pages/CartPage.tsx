@@ -14,7 +14,8 @@ export function CartPage() {
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
 
-  const shipping = totalPrice > 2999 ? 0 : 200;
+  // const shipping = totalPrice > 2999 ? 0 : 200;
+  const shipping = 0;
   const finalTotal = totalPrice - discount + shipping;
 
   const applyPromo = () => {
@@ -38,7 +39,7 @@ export function CartPage() {
               {t("Looks like you haven't added any items to your cart yet.")}
             </p>
             <Button
-              onClick={() => navigate("category", { category: "all" })}
+              onClick={() => navigate("category", { category: "all-women-collections" })}
               size="lg"
             >
               {t("Continue Shopping")}
@@ -118,7 +119,7 @@ export function CartPage() {
                 <div className="flex flex-col items-end justify-between">
                   <button
                     onClick={() => removeItem(item.id)}
-                    className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors"
+                    className="p-2 hover:bg-destructive/10 hover:text-destructive rounded-md transition-colors cursor-pointer"
                     title={t("Remove item from cart")}
                     aria-label={t("Remove item from cart")}
                   >
@@ -187,19 +188,19 @@ export function CartPage() {
                 {t("Proceed to Checkout")}
               </Button>
               <Button
-                onClick={() => navigate("category", { category: "all" })}
+                onClick={() => navigate("category", { category: "all-women-collections" })}
                 variant="outline"
                 className="w-full"
               >
                 {t("Continue Shopping")}
               </Button>
 
-              {totalPrice < 2999 && (
+              {/* {totalPrice < 1000 && (
                 <p className="text-sm text-muted-foreground mt-4 text-center">
                   Add €{(2999 - totalPrice).toLocaleString()} more for free
                   shipping!
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         </div>

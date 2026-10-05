@@ -1,3 +1,4 @@
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CartProvider } from "./contexts/CartContext";
 import {
   NavigationProvider,
@@ -19,6 +20,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 
 function AppContent() {
   const { currentPage, params } = useNavigation();
+  const prefersReducedMotion = useReducedMotion();
 
   const renderPage = () => {
     switch (currentPage) {
@@ -38,6 +40,7 @@ function AppContent() {
       case "cart":
         return <CartPage />;
       case "checkout":
+      case "paypal-return":
         return <CheckoutPage />;
       case "login":
       case "signup":
@@ -57,12 +60,21 @@ function AppContent() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1">
-        <div
-          key={`${currentPage}-${JSON.stringify(params)}`}
-          className="page-transition min-h-full"
-        >
-          {renderPage()}
-        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.main
+            key={`${currentPage}-${JSON.stringify(params)}`}
+            className="min-h-full"
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -8 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.18,
+              ease: "easeOut",
+            }}
+          >
+            {renderPage()}
+          </motion.main>
+        </AnimatePresence>
       </div>
       <Footer />
     </div>
