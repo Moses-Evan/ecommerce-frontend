@@ -40,7 +40,9 @@ export function Footer() {
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/niorra.de/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="bg-background/10 p-2 rounded-full hover:bg-secondary transition-colors"
               >
                 <Instagram className="h-5 w-5" />
@@ -154,15 +156,19 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-background/80">
                 <MapPin className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
-                <span>Ludwigstr.19 60327 Frankfurt Germany</span>
+                <span>Ludwigstraße 19 60327 Frankfurt Germany</span>
               </li>
               <li className="flex items-center gap-3 text-background/80">
                 <Phone className="h-5 w-5 text-secondary flex-shrink-0" />
-                <span>0049 069 2713 3944</span>
+                <span>
+                  <a href="tel:+496927133944">+49 69 27133944</a>
+                </span>
               </li>
               <li className="flex items-center gap-3 text-background/80">
                 <Mail className="h-5 w-5 text-secondary flex-shrink-0" />
-                <span>info@niorra.eu</span>
+                <span>
+                  <a href="mailto:info@niorra.eu">info@niorra.eu</a>
+                </span>
               </li>
             </ul>
           </div>

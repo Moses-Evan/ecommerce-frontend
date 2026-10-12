@@ -8,6 +8,7 @@ import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   id: string;
@@ -44,13 +45,14 @@ export function ProductCard({
   const discount = productDiscount || 0;
 
   const { navigate } = useNavigation();
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { t } = useLanguage();
   const [isRemoving, setIsRemoving] = useState(false);
   const [wasAdded, setWasAdded] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const isWishlisted = isInWishlist(id);
+  const cartQuantity = items.find((item) => item.id === id)?.quantity ?? 0;
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -81,6 +83,13 @@ export function ProductCard({
     if (!added) return;
     setWasAdded(true);
     window.setTimeout(() => setWasAdded(false), 1400);
+    toast.success(t("Added to cart"), {
+      description: `${productName} · 1 × €${productSellingPrice.toLocaleString()}`,
+      action: {
+        label: t("View Cart"),
+        onClick: () => navigate("cart"),
+      },
+    });
   };
 
   return (
@@ -96,7 +105,7 @@ export function ProductCard({
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 niorra-silk-drift"
         />
         {/* Quick Actions */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 transition-opacity sm:top-3 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100">
           <button
             type="button"
             onClick={handleWishlistToggle}
@@ -117,11 +126,11 @@ export function ProductCard({
         </div>
 
         {/* Add To Cart */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform">
+        <div className="absolute bottom-0 left-0 right-0 p-2 translate-y-0 transition-transform sm:p-4 sm:translate-y-full sm:group-hover:translate-y-0">
           <Button
             onClick={handleAddToCart}
             disabled={productStock <= 0}
-            className="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
+            className="mt-2 inline-flex w-full items-center justify-center gap-1 rounded-full bg-primary px-2 py-2 text-xs font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer sm:gap-2 sm:px-5 sm:py-3 sm:text-sm"
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
@@ -148,6 +157,14 @@ export function ProductCard({
                       ? "Added to Cart"
                       : "Add to Cart",
                 )}
+                {cartQuantity > 0 && (
+                  <span
+                    className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] leading-none sm:text-xs"
+                    aria-label={`${cartQuantity} ${t("in cart")}`}
+                  >
+                    ×{cartQuantity}
+                  </span>
+                )}
               </motion.span>
             </AnimatePresence>
           </Button>
@@ -155,7 +172,7 @@ export function ProductCard({
       </div>
 
       {/* Status rail stays above the image so the product remains unobstructed. */}
-      <div className="niorra-heritage-rail flex min-h-12 items-center gap-2 border-b border-border/60 px-4 pt-3">
+      <div className="niorra-heritage-rail flex min-h-10 items-center gap-2 border-b border-border/60 px-2 pt-2 sm:min-h-12 sm:px-4 sm:pt-3">
         <span className="niorra-heritage-mark" aria-hidden="true" />
         {productBadges?.includes("Bestseller") ? (
           <Badge className="niorra-badge-reveal bg-secondary text-secondary-foreground">
@@ -173,13 +190,13 @@ export function ProductCard({
       </div>
 
       {/* Product Info */}
-      <div className="p-4 pt-3">
-        <h3 className="mb-3 line-clamp-2 min-h-[3rem] text-[1.05rem] leading-snug text-foreground">
+      <div className="p-2 pt-2 sm:p-4 sm:pt-3">
+        <h3 className="mb-2 line-clamp-2 min-h-[2.5rem] text-sm leading-snug text-foreground sm:mb-3 sm:min-h-[3rem] sm:text-[1.05rem]">
           {productName}
         </h3>
 
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-bold tracking-tight text-primary">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="text-base font-bold tracking-tight text-primary sm:text-lg">
             €{productSellingPrice.toLocaleString()}
           </span>
 

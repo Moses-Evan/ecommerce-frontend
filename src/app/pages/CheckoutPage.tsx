@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Address } from "../../api/addressApi";
 import {
   getAccessToken,
-  getAuthenticatedProfile,
+  getAuthenticatedProfileWithFallback,
   setPostLoginDestination,
 } from "../../api/auth";
 import {
@@ -62,6 +62,10 @@ export function CheckoutPage() {
   const captureStarted = useRef(false);
   const cancelStarted = useRef(false);
   const isAuthenticated = Boolean(getAccessToken());
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   // const shipping = totalPrice > 2999 ? 0 : 200;
   const shipping = 0;
@@ -190,14 +194,6 @@ export function CheckoutPage() {
       return;
     }
 
-    const profile = getAuthenticatedProfile();
-    if (!profile.email) {
-      setPaymentError(
-        "Your account email is unavailable. Please sign in again.",
-      );
-      return;
-    }
-
     const orderItems = items.map((item) => ({
       productId: Number(item.id),
       quantity: item.quantity,
@@ -216,6 +212,15 @@ export function CheckoutPage() {
     setIsStartingPayment(true);
     setPaymentError("");
     try {
+      const profile = await getAuthenticatedProfileWithFallback();
+      if (!profile.email) {
+        setPaymentError(
+          "Your account email is unavailable. Please sign in again.",
+        );
+        setIsStartingPayment(false);
+        return;
+      }
+
       const order = await createOrder({
         customerName: profile.name || selectedAddress.name,
         customerEmail: profile.email,

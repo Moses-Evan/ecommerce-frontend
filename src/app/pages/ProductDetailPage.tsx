@@ -28,6 +28,8 @@ import { useWishlist } from "../contexts/WishlistContext";
 import { getAllProducts, getProductById } from "../../api/productApi";
 import { Product } from "../../types/Product";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useNavigation } from "../contexts/NavigationContext";
+import { toast } from "sonner";
 
 interface ProductDetailPageProps {
   productId: string;
@@ -85,7 +87,8 @@ export function ProductDetailPage({
   const [selectedSize, setSelectedSize] = useState("M");
   const [wasAdded, setWasAdded] = useState(false);
 
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
+  const { navigate } = useNavigation();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
   useEffect(() => {
@@ -152,9 +155,18 @@ export function ProductDetailPage({
     if (!added) return;
     setWasAdded(true);
     window.setTimeout(() => setWasAdded(false), 1400);
+    toast.success(t("Added to cart"), {
+      description: `${product.productName} · ${quantity} × €${product.productSellingPrice.toLocaleString()}`,
+      action: {
+        label: t("View Cart"),
+        onClick: () => navigate("cart"),
+      },
+    });
   };
 
   const isWishlisted = isInWishlist(product.id);
+  const cartQuantity =
+    items.find((item) => item.id === product.id)?.quantity ?? 0;
 
   return (
     <div className="min-h-screen bg-background py-8">
@@ -451,6 +463,14 @@ export function ProductDetailPage({
                         : wasAdded
                           ? "Added to Cart"
                           : "Add To Cart",
+                    )}
+                    {cartQuantity > 0 && (
+                      <span
+                        className="rounded-full bg-white/20 px-1.5 py-0.5 text-xs leading-none"
+                        aria-label={`${cartQuantity} ${t("in cart")}`}
+                      >
+                        ×{cartQuantity}
+                      </span>
                     )}
                   </motion.span>
                 </AnimatePresence>

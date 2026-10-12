@@ -8,6 +8,27 @@ Run `npm i` to install the dependencies.
 
 Run `npm run dev` to start the development server.
 
+## Android app
+
+Capacitor packages the Vite production build as an Android app. Install Android
+Studio (including its Android SDK and JDK), then from the project root run:
+
+```text
+npx cap add android
+npm run android:sync
+npm run android:open
+```
+
+In Android Studio, build the APK using **Build > Build Bundle(s) / APK(s) >
+Build APK(s)**. Alternatively, on Windows run
+`.\gradlew.bat assembleDebug` from the `android` folder. The debug APK is
+written to `android\app\build\outputs\apk\debug\app-debug.apk`.
+
+Set the production API and PayPal values in `.env.local` before building if
+they differ from the defaults. The current Google sign-in flow returns to the
+web frontend; native-app sign-in also requires configuring the OAuth backend
+to redirect to an app deep link and handling that link in Capacitor.
+
 ## PayPal checkout
 
 Create a PayPal sandbox app and add its client ID to a local `.env` file:

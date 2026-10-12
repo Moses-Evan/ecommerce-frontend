@@ -17,6 +17,7 @@ import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
 import { WishlistProvider } from "./contexts/WishlistContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { Toaster } from "./components/ui/sonner";
 
 function AppContent() {
   const { currentPage, params } = useNavigation();
@@ -77,6 +78,18 @@ function AppContent() {
         </AnimatePresence>
       </div>
       <Footer />
+      <Toaster
+        position="bottom-center"
+        className="niorra-toaster"
+        toastOptions={{
+          classNames: {
+            toast: "niorra-toast",
+            title: "niorra-toast-title",
+            description: "niorra-toast-description",
+            actionButton: "niorra-toast-action",
+          },
+        }}
+      />
     </div>
   );
 }

@@ -1,5 +1,9 @@
+import { useEffect, useState } from "react";
 import { User } from "lucide-react";
-import { getAuthenticatedProfile } from "../../api/auth";
+import {
+  getAuthenticatedProfile,
+  getAuthenticatedProfileWithFallback,
+} from "../../api/auth";
 import { useLanguage } from "../contexts/LanguageContext";
 
 interface ProfileInformationProps {
@@ -10,7 +14,23 @@ export function ProfileInformation({
   title = "Profile Information",
 }: ProfileInformationProps) {
   const { t } = useLanguage();
-  const profile = getAuthenticatedProfile();
+  const [profile, setProfile] = useState(getAuthenticatedProfile);
+
+  useEffect(() => {
+    let cancelled = false;
+    getAuthenticatedProfileWithFallback()
+      .then((authenticatedProfile) => {
+        if (!cancelled) setProfile(authenticatedProfile);
+      })
+      .catch((error: unknown) => {
+        console.error("Error loading authenticated profile:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const profileValue = (value?: string) => value || t("Not provided");
 
   return (

@@ -31,9 +31,11 @@ import { useNavigation } from "../contexts/NavigationContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import {
+  AuthenticatedProfile,
   clearAccessToken,
   getAccessToken,
   getAuthenticatedProfile,
+  getAuthenticatedProfileWithFallback,
 } from "../../api/auth";
 
 type AccountSection = "orders" | "wishlist" | "addresses" | "profile";
@@ -91,15 +93,41 @@ export function AccountPage() {
   );
   const [orderDetailLoading, setOrderDetailLoading] = useState(false);
   const [orderDetailError, setOrderDetailError] = useState("");
+  const [profile, setProfile] = useState<AuthenticatedProfile>(
+    getAuthenticatedProfile,
+  );
+  const [profileLoading, setProfileLoading] = useState(
+    Boolean(getAccessToken()),
+  );
   const [activeSection, setActiveSection] = useState<AccountSection>(
     params.section ?? params.tab ?? "profile",
   );
   const isAuthenticated = Boolean(getAccessToken());
-  const customerEmail = getAuthenticatedProfile().email;
+  const customerEmail = profile.email;
 
   useEffect(() => {
     if (!isAuthenticated) navigate("login");
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let cancelled = false;
+    getAuthenticatedProfileWithFallback()
+      .then((authenticatedProfile) => {
+        if (!cancelled) setProfile(authenticatedProfile);
+      })
+      .catch((error: unknown) => {
+        console.error("Error loading authenticated profile:", error);
+      })
+      .finally(() => {
+        if (!cancelled) setProfileLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     getAllProducts()
@@ -111,6 +139,7 @@ export function AccountPage() {
 
   useEffect(() => {
     if (activeSection !== "orders") return;
+    if (profileLoading) return;
     if (!customerEmail) {
       setOrders([]);
       setOrdersError(
@@ -140,7 +169,7 @@ export function AccountPage() {
     return () => {
       cancelled = true;
     };
-  }, [activeSection, customerEmail, t]);
+  }, [activeSection, customerEmail, profileLoading, t]);
 
   useEffect(() => {
     if (selectedOrderId === null) return;

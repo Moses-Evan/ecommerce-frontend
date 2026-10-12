@@ -43,7 +43,7 @@ export function ContactPage() {
             </div>
             <h3 className="text-lg mb-2">{t("Visit Us")}</h3>
             <p className="text-sm text-muted-foreground">
-              Ludwigstr.19
+              Ludwigstraße 19
               <br />
               60327 <br />
               Frankfurt Germany
@@ -51,6 +51,7 @@ export function ContactPage() {
           </div>
 
           <div className="bg-card border border-border rounded-lg p-6 text-center">
+  
             <div className="flex justify-center mb-4">
               <div className="bg-secondary/10 p-4 rounded-full">
                 <Phone className="h-6 w-6 text-secondary" />
@@ -58,7 +59,7 @@ export function ContactPage() {
             </div>
             <h3 className="text-lg mb-2">{t("Call Us")}</h3>
             <p className="text-sm text-muted-foreground">
-              0049 069 2713 3944
+              <a href="tel:+496927133944">+49 69 27133944</a>
               <br />
               Mon-Sat, 10 AM - 7 PM
             </p>
@@ -71,7 +72,9 @@ export function ContactPage() {
               </div>
             </div>
             <h3 className="text-lg mb-2">{t("Email Us")}</h3>
-            <p className="text-sm text-muted-foreground">info@niorra.eu</p>
+            <p className="text-sm text-muted-foreground">
+              <a href="mailto:info@niorra.eu">info@niorra.eu</a>
+            </p>
           </div>
         </div>
 
@@ -143,6 +146,26 @@ export function ContactPage() {
 
           {/* Additional Information */}
           <div className="space-y-8">
+            {/* Store location map */}
+            <div className="overflow-hidden rounded-lg">
+              <iframe
+                title="Map showing Niorra at Ludwigstraße 19, Frankfurt"
+                src="https://www.google.com/maps?q=50.1080193,8.6583456&z=16&output=embed"
+                className="block h-64 w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=Ludwigstra%C3%9Fe%2019%2C%2060327%20Frankfurt%20am%20Main%2C%20Germany"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-muted px-4 py-3 text-sm text-primary hover:underline"
+              >
+                Ludwigstraße 19, 60327 Frankfurt am Main, Germany · Get directions
+              </a>
+            </div>
+
             {/* Store Hours */}
             <div className="bg-muted/30 rounded-lg p-6">
               <div className="flex items-start gap-4">
@@ -152,18 +175,18 @@ export function ContactPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        Monday - Friday
+                        Weekdays
                       </span>
-                      <span>10:00 AM - 8:00 PM</span>
+                      <span className="ml-4 ">10:00 AM - 8:00 PM</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Saturday</span>
+                      <span className="text-muted-foreground">Weekends</span>
                       <span>10:00 AM - 9:00 PM</span>
                     </div>
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <span className="text-muted-foreground">Sunday</span>
                       <span>11:00 AM - 6:00 PM</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -195,17 +218,6 @@ export function ContactPage() {
                     details.
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Map placeholder */}
-            <div className="bg-muted rounded-lg h-64 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-muted-foreground">Map Location</p>
-                <p className="text-sm text-muted-foreground">
-                  Ludwigstr.19 60327 Frankfurt Germany
-                </p>
               </div>
             </div>
           </div>

@@ -1,6 +1,11 @@
 import { ShoppingCart, Search, Menu, Heart, User } from "lucide-react";
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useAnimationControls,
+  useReducedMotion,
+} from "framer-motion";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
@@ -25,7 +30,24 @@ export function Header() {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const prefersReducedMotion = useReducedMotion();
+  const cartIconAnimation = useAnimationControls();
+  const previousTotalItems = useRef(totalItems);
   const openAccount = () => navigate(getAccessToken() ? "account" : "login");
+
+  useEffect(() => {
+    if (
+      totalItems > previousTotalItems.current &&
+      !prefersReducedMotion
+    ) {
+      void cartIconAnimation.start({
+        rotate: [0, -14, 14, -10, 10, 0],
+        scale: [1, 1.2, 1],
+        transition: { duration: 0.55, ease: "easeInOut" },
+      });
+    }
+
+    previousTotalItems.current = totalItems;
+  }, [totalItems, prefersReducedMotion, cartIconAnimation]);
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
@@ -40,12 +62,12 @@ export function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
+      <div className="container mx-auto px-3 py-3 sm:px-4 sm:py-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <button aria-label={t("Menu")} className="lg:hidden p-2">
+              <button aria-label={t("Menu")} className="lg:hidden p-1.5 sm:p-2">
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
@@ -144,14 +166,18 @@ export function Header() {
             </SheetContent>
           </Sheet>
           <div
-            className="flex-1 shrink-0 lg:flex-initial cursor-pointer"
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 lg:flex-initial lg:gap-2"
             onClick={() => navigate("home")}
           >
             {/* <h1 className="text-3xl text-primary tracking-tight">Niorra</h1> */}
-            <div className="text-3xl text-primary tracking-tight flex items-center gap-2">
-              <img src={logoIcon} width={80} alt="" />
-              <h1 className="text-niorra-red">NIORRA</h1>
-            </div>
+            <img
+              src={logoIcon}
+              className="h-11 w-11 shrink-0 object-contain sm:h-16 sm:w-16 lg:h-20 lg:w-20"
+              alt=""
+            />
+            <h1 className="truncate text-xl tracking-tight text-niorra-red sm:text-2xl lg:text-3xl">
+              NIORRA
+            </h1>
           </div>
 
           {/* Desktop Navigation */}
@@ -184,7 +210,7 @@ export function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-4">
             <div
               className="flex items-center rounded-full border border-border p-1 text-xs font-semibold"
               aria-label="Language"
@@ -192,14 +218,14 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setLanguage("de")}
-                className={`rounded-full px-2 py-1 cursor-pointer transition-colors ${language === "de" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                className={`rounded-full px-1.5 py-1 cursor-pointer transition-colors sm:px-2 ${language === "de" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
                 DE
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage("en")}
-                className={`rounded-full px-2 py-1 cursor-pointer transition-colors ${language === "en" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                className={`rounded-full px-1.5 py-1 cursor-pointer transition-colors sm:px-2 ${language === "en" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
                 EN
               </button>
@@ -234,9 +260,14 @@ export function Header() {
             <button
               onClick={() => navigate("cart")}
               aria-label={`${t("Cart")}${totalItems ? ` (${totalItems})` : ""}`}
-              className="p-2 hover:bg-accent/10 rounded-full transition-colors relative cursor-pointer"
+              className="relative cursor-pointer rounded-full p-1.5 transition-colors hover:bg-accent/10 sm:p-2"
             >
-              <ShoppingCart className="h-5 w-5" />
+              <motion.span
+                animate={cartIconAnimation}
+                className="inline-flex origin-center"
+              >
+                <ShoppingCart className="h-5 w-5" />
+              </motion.span>
               <AnimatePresence initial={false}>
                 {totalItems > 0 && (
                   <motion.span
@@ -254,7 +285,7 @@ export function Header() {
                       stiffness: 500,
                       damping: 24,
                     }}
-                    className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-xs text-secondary-foreground"
+                    className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"
                   >
                     {totalItems}
                   </motion.span>

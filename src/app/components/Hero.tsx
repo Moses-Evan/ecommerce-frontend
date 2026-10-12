@@ -90,7 +90,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative h-[clamp(440px,72svh,800px)] min-h-[440px] overflow-hidden"
+      className="relative h-[clamp(400px,66svh,800px)] min-h-[400px] overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -116,7 +116,7 @@ export function Hero() {
                   <p className="mb-3 inline-flex max-w-full rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/90 shadow-sm shadow-black/20 backdrop-blur-sm sm:tracking-[0.28em] md:text-xs">
                     {t(slide.label)}
                   </p>
-                  <h1 className="mb-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:mb-6 md:text-6xl">
+                  <h1 className="mb-3 text-2xl font-semibold leading-tight tracking-tight sm:text-4xl md:mb-6 md:text-6xl">
                     {t(slide.headline)}
                   </h1>
                   <p className="mb-4 text-sm leading-relaxed text-white/85 sm:text-base md:mb-6 md:text-xl">

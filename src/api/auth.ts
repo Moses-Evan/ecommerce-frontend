@@ -22,6 +22,9 @@ export interface AuthenticatedProfile {
   picture?: string;
 }
 
+let currentUserRequest: Promise<AuthenticatedProfile> | null = null;
+let currentUserLoaded = false;
+
 export function getAuthenticatedProfile(): AuthenticatedProfile {
   let savedProfile: AuthenticatedProfile = {};
   try {
@@ -78,9 +81,74 @@ export function getAuthenticatedProfile(): AuthenticatedProfile {
   }
 }
 
+export async function getAuthenticatedProfileWithFallback() {
+  const profile = getAuthenticatedProfile();
+  if (!getAccessToken() || currentUserLoaded) return profile;
+  if (profile.email && profile.name && profile.givenName && profile.familyName) {
+    return profile;
+  }
+
+  if (!currentUserRequest) {
+    const token = getAccessToken();
+    if (!token) return profile;
+
+    currentUserRequest = fetch(`${API_ORIGIN}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Unable to load your account (${response.status}).`);
+        }
+        const user = (await response.json()) as Record<string, unknown>;
+        const serverProfile: AuthenticatedProfile = {
+          name: typeof user.name === "string" ? user.name : undefined,
+          givenName:
+            typeof user.firstName === "string"
+              ? user.firstName
+              : typeof user.givenName === "string"
+                ? user.givenName
+                : undefined,
+          familyName:
+            typeof user.lastName === "string"
+              ? user.lastName
+              : typeof user.familyName === "string"
+                ? user.familyName
+                : undefined,
+          email:
+            typeof user.email === "string"
+              ? user.email
+              : typeof user.username === "string"
+                ? user.username
+                : undefined,
+          picture: typeof user.picture === "string" ? user.picture : undefined,
+        };
+        const existingProfile = getAuthenticatedProfile();
+        const mergedProfile: AuthenticatedProfile = {
+          name: serverProfile.name || existingProfile.name,
+          givenName: serverProfile.givenName || existingProfile.givenName,
+          familyName: serverProfile.familyName || existingProfile.familyName,
+          email: serverProfile.email || existingProfile.email,
+          picture: serverProfile.picture || existingProfile.picture,
+        };
+        if (Object.values(mergedProfile).some(Boolean)) {
+          localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(mergedProfile));
+        }
+        currentUserLoaded = true;
+        return mergedProfile;
+      })
+      .finally(() => {
+        currentUserRequest = null;
+      });
+  }
+
+  return currentUserRequest;
+}
+
 export const clearAccessToken = () => {
   localStorage.removeItem(TOKEN_STORAGE_KEY);
   localStorage.removeItem(PROFILE_STORAGE_KEY);
+  currentUserLoaded = false;
+  currentUserRequest = null;
 };
 
 export function setPostLoginDestination(destination: "checkout") {

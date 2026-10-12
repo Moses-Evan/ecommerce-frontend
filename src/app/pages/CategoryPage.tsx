@@ -5,7 +5,7 @@ import {
   allCategories,
   productOccasions,
 } from "../data/categories";
-import { Filter, SlidersHorizontal } from "lucide-react";
+import { Filter, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Select,
@@ -160,7 +160,7 @@ export function CategoryPage({
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(true);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -324,24 +324,119 @@ export function CategoryPage({
     );
   };
 
+  const clearFilters = () => {
+    setSelectedFabrics([]);
+    setSelectedColors([]);
+    setSelectedOccasion(null);
+    setPriceRange([0, 1000]);
+  };
+
+  const renderFilterPanel = (idPrefix: string, onClose?: () => void) => (
+    <div className="rounded-lg border border-border bg-card p-5 lg:p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{t("Filters")}</h3>
+        {onClose ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("Close filters")}
+            onClick={onClose}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        ) : (
+          <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
+        )}
+      </div>
+
+      <div className="mb-6">
+        <Label className="mb-3 block font-semibold">{t("Price Range")}</Label>
+        <Slider
+          min={10}
+          max={1000}
+          step={10}
+          value={priceRange}
+          onValueChange={setPriceRange}
+          className="mb-2"
+        />
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <span>€{priceRange[0]}</span>
+          <span>€{priceRange[1]}</span>
+        </div>
+      </div>
+
+      {fabrics.length > 0 && (
+        <div className="mb-6">
+          <Label className="mb-3 block font-semibold">{t("Fabric")}</Label>
+          <div className="space-y-2">
+            {fabrics.map((fabric) => (
+              <div key={fabric} className="flex items-center gap-2">
+                <Checkbox
+                  id={`${idPrefix}-fabric-${fabric}`}
+                  checked={selectedFabrics.includes(fabric)}
+                  onCheckedChange={() => toggleFabric(fabric)}
+                />
+                <label
+                  htmlFor={`${idPrefix}-fabric-${fabric}`}
+                  className="cursor-pointer text-sm"
+                >
+                  {fabric}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {colors.length > 0 && (
+        <div className="mb-6">
+          <Label className="mb-3 block font-semibold">{t("Color")}</Label>
+          <div className="space-y-2">
+            {colors.map((color) => (
+              <div key={color} className="flex items-center gap-2">
+                <Checkbox
+                  id={`${idPrefix}-color-${color}`}
+                  checked={selectedColors.includes(color)}
+                  onCheckedChange={() => toggleColor(color)}
+                />
+                <label
+                  htmlFor={`${idPrefix}-color-${color}`}
+                  className="cursor-pointer text-sm"
+                >
+                  {color}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <Button variant="outline" className="w-full" onClick={clearFilters}>
+        {t("Clear All Filters")}
+      </Button>
+    </div>
+  );
+
   return (
     <motion.div
       key={`${category}-${occasion || "none"}-${selectedOccasion || "none"}`}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="min-h-screen py-8"
+      className="min-h-screen py-5 md:py-8"
     >
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <div className="mb-4">
             {getCategoryGroupName() && (
               <p className="text-sm font-semibold text-primary uppercase tracking-wide mb-2">
                 {t(getCategoryGroupName() || "")}
               </p>
             )}
-            <h1 className="text-4xl md:text-5xl font-bold">{categoryTitle}</h1>
+            <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
+              {categoryTitle}
+            </h1>
           </div>
           <p className="text-muted-foreground">
             {loading
@@ -444,7 +539,7 @@ export function CategoryPage({
                   <h4 className="text-lg font-semibold text-primary mb-4 uppercase tracking-wide">
                     {t(group.name)}
                   </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
                     {group.items.map((item) => {
                       const itemCount = products.filter((p) =>
                         productMatchesCategory(p, item.id),
@@ -481,122 +576,34 @@ export function CategoryPage({
           </div>
         )}
 
-        <div className="flex gap-8">
+        <div className="flex flex-col gap-5 lg:flex-row lg:gap-8">
           {/* Filters Sidebar */}
           <aside
-            className={`${showFilters ? "w-64" : "w-0"} flex-shrink-0 transition-all duration-300 overflow-hidden`}
+            className="hidden w-64 flex-shrink-0 overflow-hidden lg:block"
           >
-            <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold">{t("Filters")}</h3>
-                <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
-              </div>
-
-              {/* Price Range */}
-              <div className="mb-6">
-                <Label className="mb-3 block font-semibold">
-                  {t("Price Range")}
-                </Label>
-                <Slider
-                  min={10}
-                  max={1000}
-                  step={10}
-                  value={priceRange}
-                  onValueChange={setPriceRange}
-                  className="mb-2"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>€{priceRange[0]}</span>
-                  <span>€{priceRange[1]}</span>
-                </div>
-              </div>
-
-              {/* Fabric Filter */}
-              {fabrics.length > 0 && (
-                <div className="mb-6">
-                  <Label className="mb-3 block font-semibold">
-                    {t("Fabric")}
-                  </Label>
-                  <div className="space-y-2">
-                    {fabrics.map((fabric) => (
-                      <div key={fabric} className="flex items-center gap-2">
-                        <Checkbox
-                          id={`fabric-${fabric}`}
-                          checked={selectedFabrics.includes(fabric)}
-                          onCheckedChange={() => toggleFabric(fabric)}
-                        />
-                        <label
-                          htmlFor={`fabric-${fabric}`}
-                          className="text-sm cursor-pointer"
-                        >
-                          {fabric}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Color Filter */}
-              {colors.length > 0 && (
-                <div className="mb-6">
-                  <Label className="mb-3 block font-semibold">
-                    {t("Color")}
-                  </Label>
-                  <div className="space-y-2">
-                    {colors.map((color) => (
-                      <div key={color} className="flex items-center gap-2">
-                        <Checkbox
-                          id={`color-${color}`}
-                          checked={selectedColors.includes(color)}
-                          onCheckedChange={() => toggleColor(color)}
-                        />
-                        <label
-                          htmlFor={`color-${color}`}
-                          className="text-sm cursor-pointer"
-                        >
-                          {color}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Clear Filters */}
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  setSelectedFabrics([]);
-                  setSelectedColors([]);
-                  setSelectedOccasion(null);
-                  setPriceRange([0, 1000]);
-                }}
-              >
-                {t("Clear All Filters")}
-              </Button>
-            </div>
+            <div className="sticky top-24">{renderFilterPanel("desktop")}</div>
           </aside>
 
           {/* Products Grid */}
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             {/* Sort Bar */}
-            <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div className="mb-4 flex items-center justify-between gap-3 sm:mb-6">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden"
+                onClick={() => setMobileFiltersOpen(true)}
+                className="shrink-0 lg:hidden"
               >
                 <Filter className="h-4 w-4 mr-2" />
-                {t(showFilters ? "Hide" : "Show")} {t("Filters")}
+                {t("Filters")}
               </Button>
 
-              <div className="flex items-center gap-2 ml-auto">
-                <Label className="text-sm font-semibold">{t("Sort by:")}</Label>
+              <div className="ml-auto flex min-w-0 items-center gap-2">
+                <Label className="hidden text-sm font-semibold sm:block">
+                  {t("Sort by:")}
+                </Label>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-36 sm:w-40">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -613,6 +620,27 @@ export function CategoryPage({
               </div>
             </div>
 
+            {mobileFiltersOpen && (
+              <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-12 lg:hidden">
+                <button
+                  type="button"
+                  className="absolute inset-0 h-full w-full cursor-default"
+                  aria-label={t("Close filters")}
+                  onClick={() => setMobileFiltersOpen(false)}
+                />
+                <aside
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={t("Filters")}
+                  className="relative z-10 w-full max-w-md"
+                >
+                  {renderFilterPanel("mobile", () =>
+                    setMobileFiltersOpen(false),
+                  )}
+                </aside>
+              </div>
+            )}
+
             {/* Products */}
             {loading ? (
               <div className="text-center py-20">
@@ -623,7 +651,7 @@ export function CategoryPage({
             ) : filteredProducts.length > 0 ? (
               <motion.div
                 layout
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-6"
               >
                 <AnimatePresence mode="popLayout">
                   {filteredProducts.map((product) => (
@@ -658,12 +686,7 @@ export function CategoryPage({
                 <Button
                   variant="outline"
                   className="mt-4"
-                  onClick={() => {
-                    setSelectedFabrics([]);
-                    setSelectedColors([]);
-                    setSelectedOccasion(null);
-                    setPriceRange([0, 1000]);
-                  }}
+                  onClick={clearFilters}
                 >
                   {t("Clear Filters")}
                 </Button>

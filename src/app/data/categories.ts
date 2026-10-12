@@ -217,7 +217,7 @@ export const categories: CategoryGroup[] = [
       },
       {
         id: "jwellery",
-        name: "Jwellery",
+        name: "Jewellery",
       },
       {
         id: "gift-items",

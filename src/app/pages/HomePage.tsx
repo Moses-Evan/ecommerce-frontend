@@ -107,28 +107,28 @@ export function HomePage() {
       <Hero />
 
       {/* Shop by Price */}
-      <section className="py-12 md:py-16 border-b border-border">
+      <section className="border-b border-border py-8 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="relative overflow-hidden rounded-2xl border border-secondary/20 bg-[#fff8ef] px-4 py-10 shadow-sm sm:px-6 md:px-10">
+          <div className="relative overflow-hidden rounded-2xl border border-secondary/20 bg-[#fff8ef] px-3 py-7 shadow-sm sm:px-6 sm:py-10 md:px-10">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-rose-800 via-amber-500 to-emerald-700" />
             <div className="pointer-events-none absolute -left-12 top-8 h-32 w-32 rounded-full border-[18px] border-secondary/10" />
             <div className="pointer-events-none absolute -right-10 bottom-4 h-28 w-28 rounded-full border-[16px] border-primary/10" />
 
             <div className="relative text-center">
-              <p className="mb-2 text-xs tracking-[0.35em] text-secondary uppercase">
+              <p className="mb-2 text-[10px] tracking-[0.25em] text-secondary uppercase sm:text-xs sm:tracking-[0.35em]">
                 {t("Curated Sarees")}
               </p>
-              <h2 className="text-4xl md:text-5xl mb-3">
+              <h2 className="mb-3 text-2xl sm:text-3xl md:text-5xl">
                 {t("Shop by Price")}
               </h2>
-              <div className="mx-auto mb-8 flex max-w-xs items-center justify-center gap-3">
+              <div className="mx-auto mb-6 flex max-w-xs items-center justify-center gap-3 sm:mb-8">
                 <span className="h-px flex-1 bg-secondary/40" />
                 <span className="h-2 w-2 rotate-45 bg-secondary" />
                 <span className="h-px flex-1 bg-secondary/40" />
               </div>
             </div>
 
-            <div className="relative grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
+            <div className="relative grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5 lg:gap-6">
               {priceRanges.map((priceRange) => (
                 <button
                   key={priceRange.range}
@@ -140,7 +140,7 @@ export function HomePage() {
                       priceMax: priceRange.max,
                     })
                   }
-                  className="group mx-auto flex aspect-square w-full max-w-[138px] flex-col items-center justify-center rounded-full border-[3px] border-[#8b1e2d]/30 bg-[#76000a] p-4 text-center text-white shadow-[0_8px_22px_rgba(118,0,10,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-400 hover:bg-[#8f0714] hover:shadow-[0_14px_30px_rgba(118,0,10,0.28)] focus:outline-none focus:ring-4 focus:ring-amber-400/40 sm:max-w-[150px] cursor-pointer"
+                  className="group mx-auto flex aspect-square w-full max-w-[150px] flex-col items-center justify-center rounded-full border-[3px] border-[#8b1e2d]/30 bg-[#76000a] p-3 text-center text-white shadow-[0_8px_22px_rgba(118,0,10,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-400 hover:bg-[#8f0714] hover:shadow-[0_14px_30px_rgba(118,0,10,0.28)] focus:outline-none focus:ring-4 focus:ring-amber-400/40 cursor-pointer sm:p-4"
                   aria-label={`Shop sarees priced ${priceRange.range}`}
                 >
                   <span className="mb-2 h-2 w-12 rounded-full bg-amber-300/90 transition-transform duration-300 group-hover:scale-x-125" />
@@ -182,19 +182,21 @@ export function HomePage() {
       </section> */}
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="mb-8 text-center md:mb-12">
             <p className="text-secondary mb-2 tracking-widest uppercase">
               {t("Bestsellers")}
             </p>
-            <h2 className="text-4xl md:text-5xl mb-4">{t("Newly Arrived")}</h2>
+            <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl">
+              {t("Newly Arrived")}
+            </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               {t("Handpicked selections from our most loved collections")}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
             {loading ? (
               <div className="col-span-full text-center py-10">
                 {t("Loading products...")}
@@ -338,25 +340,25 @@ export function HomePage() {
       </section> */}
 
       {/* Why Choose Us */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 items-center gap-8 md:gap-12 lg:grid-cols-2">
             <div>
               <p className="text-secondary mb-2 tracking-widest uppercase">
                 {t("Why Niorra")}
               </p>
-              <h2 className="text-4xl mb-6">
+              <h2 className="mb-4 text-3xl sm:text-4xl md:mb-6">
                 {t("Crafted with Love, Delivered with Care")}
               </h2>
-              <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+              <p className="mb-6 text-base leading-relaxed text-muted-foreground md:mb-8 md:text-lg">
                 {t(
                   "Niorra has become the best online shopping site in Sarees & ready made Blouses. Niorra brings you an array of silk sarees, cotton sari and linen handloom sarees online. Famously known as pure silk saree brand in India, A perfect place to buy hand loom silk sari from the best online shopping website for a popular bridal, party wear & reception saree choice.",
                 )}
               </p>
-              <h2 className="text-4xl mb-6">
+              <h2 className="mb-4 text-3xl sm:text-4xl md:mb-6">
                 {t("No. 1 Saree collection in Germany")}
               </h2>
-              <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+              <p className="mb-6 text-base leading-relaxed text-muted-foreground md:mb-8 md:text-lg">
                 {t(
                   "More then 2000 designs in sarees are available in stock. A range of pure silk sarees is available at your fingertips for you to explore and choose. Shop from the comforts of your surrounding and look for what you want. No bargaining or haggling, but certainly various options for online saree shopping in Germany, such as Pay by card, Pay Pal",
                 )}
@@ -437,29 +439,29 @@ export function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section className="bg-primary py-12 text-primary-foreground md:py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 gap-5 text-center md:grid-cols-4 md:gap-8">
             <div>
-              <div className="text-4xl md:text-5xl mb-2">10,000+</div>
+              <div className="mb-2 text-3xl sm:text-4xl md:text-5xl">10,000+</div>
               <p className="text-primary-foreground/80">
                 {t("Happy Customers")}
               </p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl mb-2">500+</div>
+              <div className="mb-2 text-3xl sm:text-4xl md:text-5xl">500+</div>
               <p className="text-primary-foreground/80">
                 {t("Unique Designs")}
               </p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl mb-2">50+</div>
+              <div className="mb-2 text-3xl sm:text-4xl md:text-5xl">50+</div>
               <p className="text-primary-foreground/80">
                 {t("Master Weavers")}
               </p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl mb-2">15+</div>
+              <div className="mb-2 text-3xl sm:text-4xl md:text-5xl">15+</div>
               <p className="text-primary-foreground/80">
                 {t("States Covered")}
               </p>
