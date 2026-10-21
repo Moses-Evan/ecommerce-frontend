@@ -5,7 +5,7 @@ const POST_LOGIN_DESTINATION_KEY = "niorra_post_login_destination";
 const authParameterNames = ["token", "access_token", "accessToken", "jwt"];
 
 export const API_ORIGIN = (
-  import.meta.env.VITE_API_ORIGIN ?? "https://ql4zl5fz-8080.inc1.devtunnels.ms"
+  import.meta.env.VITE_API_ORIGIN ?? "https://api.niorra.eu"
 ).replace(/\/$/, "");
 
 export const getGoogleAuthUrl = () =>
