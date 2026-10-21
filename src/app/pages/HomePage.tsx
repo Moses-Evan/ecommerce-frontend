@@ -13,6 +13,8 @@ import { PremiumCollectionsSection } from "../components/PremiumCollectionsSecti
 import { useEffect, useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 
+import niorraCover from "../../images/niorra-cover.jpg";
+
 export function HomePage() {
   const { navigate } = useNavigation();
   const { t } = useLanguage();
@@ -418,21 +420,21 @@ export function HomePage() {
               </Button> */}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="aspect-[3/4] rounded-lg overflow-hidden">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1693987646600-c911a3f571b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB0ZXh0aWxlJTIwcGF0dGVybnxlbnwxfHx8fDE3NTk1ODk1NTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Textile pattern"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="aspect-[3/4] rounded-lg overflow-hidden mt-8">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="aspect-[3/4] rounded-lg overflow-hidden ml-90">
+                  <ImageWithFallback
+                      src={niorraCover}
+                      alt="Textile pattern"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+              {/* <div className="aspect-[3/4] rounded-lg overflow-hidden mt-8">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1702574145861-bcb8227a31bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWF2aW5nJTIwbG9vbSUyMHRleHRpbGV8ZW58MXx8fHwxNzU5NTkwMDkzfDA&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Weaving process"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

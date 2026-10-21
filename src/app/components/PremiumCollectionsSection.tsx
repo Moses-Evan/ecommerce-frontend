@@ -6,9 +6,10 @@ import { ProductCard } from "./ProductCard";
 import { Product } from "../../types/Product";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import summerCollectionsImage from "../../images/SummerCollections.png";
-import collectionsImage from "../../images/collec.png";
-import collectionsImage2 from "../../images/collec2.png";
+import summerCollectionsImage from "../../images/collections/summer-collection.png";
+import festiveBridal from "../../images/collections/festive-bridal.jpeg";
+import designerLehengas from "../../images/collections/designer-lehengas.png";
+import chuddidharCollection from "../../images/collections/chuddidhar-collection.png";
 
 interface CollectionItem {
   id: string;
@@ -38,9 +39,9 @@ const sortNewestFirst = (a: Product, b: Product) =>
 
 const collectionThumbnails = [
   summerCollectionsImage,
-  collectionsImage,
-  collectionsImage2,
-  summerCollectionsImage,
+  festiveBridal,
+  designerLehengas,
+  chuddidharCollection,
 ];
 
 const buildCollectionsFromProducts = (products: Product[] = []) => {
