@@ -6,10 +6,10 @@ import { ProductCard } from "./ProductCard";
 import { Product } from "../../types/Product";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useLanguage } from "../contexts/LanguageContext";
-import summerCollectionsImage from "../../images/collections/summer-collection.png";
-import festiveBridal from "../../images/collections/festive-bridal.jpeg";
-import designerLehengas from "../../images/collections/designer-lehengas.png";
-import chuddidharCollection from "../../images/collections/chuddidhar-collection.png";
+import summerCollectionsImage from "../../images/collections/summer-collection.webp";
+import festiveBridal from "../../images/collections/festive-bridal.webp";
+import designerLehengas from "../../images/collections/designer-lehengas.webp";
+import chuddidharCollection from "../../images/collections/chuddidhar-collection.webp";
 
 interface CollectionItem {
   id: string;
