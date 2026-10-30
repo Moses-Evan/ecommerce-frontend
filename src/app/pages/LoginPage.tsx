@@ -1,9 +1,26 @@
+import { Browser } from "@capacitor/browser";
 import { Button } from "../components/ui/button";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getGoogleAuthUrl } from "../../api/auth";
 
 export function LoginPage() {
   const { t } = useLanguage();
+
+  const handleGoogleLogin = async () => {
+    const googleAuthUrl = getGoogleAuthUrl();
+
+    try {
+      const nativeApp = Boolean((window as any)?.Capacitor?.isNativePlatform?.());
+      if (nativeApp) {
+        await Browser.open({ url: googleAuthUrl, windowName: "_self" });
+        return;
+      }
+    } catch (error) {
+      console.error("Capacitor browser launch failed:", error);
+    }
+
+    window.location.assign(googleAuthUrl);
+  };
 
   return (
     <div className="min-h-screen py-12">
@@ -20,7 +37,7 @@ export function LoginPage() {
               variant="outline"
               className="w-full"
               size="lg"
-              onClick={() => window.location.assign(getGoogleAuthUrl())}
+              onClick={handleGoogleLogin}
             >
               {t("Continue with Google")}
             </Button>

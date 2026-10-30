@@ -12,13 +12,33 @@ import { Button } from "../components/ui/button";
 import { PremiumCollectionsSection } from "../components/PremiumCollectionsSection";
 import { useEffect, useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { categories as sharedCategories } from "../data/categories";
 
 import niorraCover from "../../images/niorra-cover.jpg";
 
 export function HomePage() {
   const { navigate } = useNavigation();
   const { t } = useLanguage();
-  const categories = [
+  const [isMobileApp, setIsMobileApp] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const handleResize = () => setIsMobileApp(mediaQuery.matches);
+
+    handleResize();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", handleResize);
+      return () => mediaQuery.removeEventListener("change", handleResize);
+    }
+
+    mediaQuery.addListener(handleResize);
+    return () => mediaQuery.removeListener(handleResize);
+  }, []);
+
+  const mobileCategories = [
     {
       title: "Wedding Collection",
       categoryId: "wedding",
@@ -48,6 +68,17 @@ export function HomePage() {
       itemCount: "180+",
     },
   ];
+
+  const mobileCollectionCards = sharedCategories.flatMap((group) =>
+    group.items.slice(0, 2).map((item) => ({
+      title: item.name,
+      categoryId: item.id,
+      image:
+        mobileCategories.find((card) => card.categoryId === item.id)?.image ??
+        "https://images.unsplash.com/photo-1688789913221-071a44294edf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWRkaW5nJTIwc2FyZWUlMjBicmlkYWx8ZW58MXx8fHwxNzU5NTg5NTUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      itemCount: `${item.id ? "Collection" : "New"}`,
+    })),
+  );
 
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -106,7 +137,46 @@ export function HomePage() {
 
   return (
     <main>
-      <Hero />
+      {!isMobileApp && <Hero />}
+
+      {isMobileApp && (
+        <section className="border-b border-border bg-gradient-to-b from-[#fff7eb] to-white py-4">
+          <div className="container mx-auto px-4">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-secondary">
+                {t("Collections")}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {mobileCollectionCards.map((category) => (
+                <button
+                  key={category.categoryId}
+                  type="button"
+                  onClick={() =>
+                    navigate("category", { category: category.categoryId })
+                  }
+                  className="group relative overflow-hidden rounded-2xl border border-border bg-white p-0 text-left shadow-[0_12px_30px_rgba(80,20,28,0.06)] transition-transform duration-200 active:scale-[0.98]"
+                >
+                  <div className="h-28 overflow-hidden">
+                    <img
+                      src={category.image}
+                      alt={category.title}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="space-y-1 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-3 text-white">
+                    <div className="text-base font-medium">{category.title}</div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-white/80">
+                      {category.itemCount}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Shop by Price */}
       <section className="border-b border-border py-8 md:py-16">
@@ -341,104 +411,89 @@ export function HomePage() {
         </div>
       </section> */}
 
-      {/* Why Choose Us */}
-      <section className="py-12 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 items-center gap-8 md:gap-12 lg:grid-cols-2">
-            <div>
-              <p className="text-secondary mb-2 tracking-widest uppercase">
-                {t("Why Niorra")}
-              </p>
-              <h2 className="mb-4 text-3xl sm:text-4xl md:mb-6">
-                {t("Crafted with Love, Delivered with Care")}
-              </h2>
-              <p className="mb-6 text-base leading-relaxed text-muted-foreground md:mb-8 md:text-lg">
-                {t(
-                  "Niorra has become the best online shopping site in Sarees & ready made Blouses. Niorra brings you an array of silk sarees, cotton sari and linen handloom sarees online. Famously known as pure silk saree brand in India, A perfect place to buy hand loom silk sari from the best online shopping website for a popular bridal, party wear & reception saree choice.",
-                )}
-              </p>
-              <h2 className="mb-4 text-3xl sm:text-4xl md:mb-6">
-                {t("No. 1 Saree collection in Germany")}
-              </h2>
-              <p className="mb-6 text-base leading-relaxed text-muted-foreground md:mb-8 md:text-lg">
-                {t(
-                  "More then 2000 designs in sarees are available in stock. A range of pure silk sarees is available at your fingertips for you to explore and choose. Shop from the comforts of your surrounding and look for what you want. No bargaining or haggling, but certainly various options for online saree shopping in Germany, such as Pay by card, Pay Pal",
-                )}
-              </p>
+      {!isMobileApp && (
+        <section className="py-12 md:py-20">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 items-center gap-8 md:gap-12 lg:grid-cols-2">
+              <div>
+                <p className="text-secondary mb-2 tracking-widest uppercase">
+                  {t("Why Niorra")}
+                </p>
+                <h2 className="mb-4 text-3xl sm:text-4xl md:mb-6">
+                  {t("Crafted with Love, Delivered with Care")}
+                </h2>
+                <p className="mb-6 text-base leading-relaxed text-muted-foreground md:mb-8 md:text-lg">
+                  {t(
+                    "Niorra has become the best online shopping site in Sarees & ready made Blouses. Niorra brings you an array of silk sarees, cotton sari and linen handloom sarees online. Famously known as pure silk saree brand in India, A perfect place to buy hand loom silk sari from the best online shopping website for a popular bridal, party wear & reception saree choice.",
+                  )}
+                </p>
+                <h2 className="mb-4 text-3xl sm:text-4xl md:mb-6">
+                  {t("No. 1 Saree collection in Germany")}
+                </h2>
+                <p className="mb-6 text-base leading-relaxed text-muted-foreground md:mb-8 md:text-lg">
+                  {t(
+                    "More then 2000 designs in sarees are available in stock. A range of pure silk sarees is available at your fingertips for you to explore and choose. Shop from the comforts of your surrounding and look for what you want. No bargaining or haggling, but certainly various options for online saree shopping in Germany, such as Pay by card, Pay Pal",
+                  )}
+                </p>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary/10 p-3 rounded-full flex-shrink-0">
-                    <Star className="h-6 w-6 text-secondary" />
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-secondary/10 p-3 rounded-full flex-shrink-0">
+                      <Star className="h-6 w-6 text-secondary" />
+                    </div>
+                    <div>
+                      <h4 className="mb-1">{t("Authentic Craftsmanship")}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {t(
+                          "Direct sourcing from traditional weavers ensures genuine quality",
+                        )}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="mb-1">{t("Authentic Craftsmanship")}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t(
-                        "Direct sourcing from traditional weavers ensures genuine quality",
-                      )}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary/10 p-3 rounded-full flex-shrink-0">
-                    <Star className="h-6 w-6 text-secondary" />
+                  <div className="flex items-start gap-4">
+                    <div className="bg-secondary/10 p-3 rounded-full flex-shrink-0">
+                      <Star className="h-6 w-6 text-secondary" />
+                    </div>
+                    <div>
+                      <h4 className="mb-1">{t("Curated Collections")}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {t(
+                          "Every piece is carefully selected to match your style",
+                        )}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="mb-1">{t("Curated Collections")}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t(
-                        "Every piece is carefully selected to match your style",
-                      )}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary/10 p-3 rounded-full flex-shrink-0">
-                    <Star className="h-6 w-6 text-secondary" />
-                  </div>
-                  <div>
-                    <h4 className="mb-1">{t("Sustainable Practices")}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t(
-                        "Supporting artisan communities and preserving traditions",
-                      )}
-                    </p>
+                  <div className="flex items-start gap-4">
+                    <div className="bg-secondary/10 p-3 rounded-full flex-shrink-0">
+                      <Star className="h-6 w-6 text-secondary" />
+                    </div>
+                    <div>
+                      <h4 className="mb-1">{t("Sustainable Practices")}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {t(
+                          "Supporting artisan communities and preserving traditions",
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* <Button
-                onClick={() => navigate("about")}
-                variant="outline"
-                size="lg"
-                className="mt-8"
-              >
-                Learn Our Story
-              </Button> */}
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              <div className="aspect-[3/4] rounded-lg overflow-hidden ml-90">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="aspect-[3/4] overflow-hidden rounded-lg">
                   <ImageWithFallback
-                      src={niorraCover}
-                      alt="Textile pattern"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-              {/* <div className="aspect-[3/4] rounded-lg overflow-hidden mt-8">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1702574145861-bcb8227a31bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWF2aW5nJTIwbG9vbSUyMHRleHRpbGV8ZW58MXx8fHwxNzU5NTkwMDkzfDA&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Weaving process"
-                  className="w-full h-full object-cover"
-                />
-              </div> */}
+                    src={niorraCover}
+                    alt="Textile pattern"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Stats Section */}
       <section className="bg-primary py-12 text-primary-foreground md:py-20">
@@ -472,8 +527,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <Testimonials />
+      {!isMobileApp && <Testimonials />}
 
       {/* Trust Strip */}
       <HomeTrustStrip />

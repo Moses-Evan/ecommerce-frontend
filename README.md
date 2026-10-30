@@ -25,9 +25,11 @@ Build APK(s)**. Alternatively, on Windows run
 written to `android\app\build\outputs\apk\debug\app-debug.apk`.
 
 Set the production API and PayPal values in `.env.local` before building if
-they differ from the defaults. The current Google sign-in flow returns to the
-web frontend; native-app sign-in also requires configuring the OAuth backend
-to redirect to an app deep link and handling that link in Capacitor.
+they differ from the defaults. For Android devices, set `VITE_API_ORIGIN` to
+your Lightsail backend URL or set `localStorage.setItem('niorra_api_origin',
+'https://your-backend-url')` before the app loads. The Google sign-in flow now
+uses a custom `niorra://auth` deep-link callback for native-app OAuth and falls
+back to the web app when it is running in a browser.
 
 ## PayPal checkout
 

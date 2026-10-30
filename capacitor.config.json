@@ -1,5 +1,15 @@
 {
   "appId": "com.niorra.app",
   "appName": "Niorra",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "cleartext": true,
+    "allowNavigation": [
+      "*"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "scheme": "niorra"
+  }
 }

@@ -1,5 +1,5 @@
-import { ShoppingCart, Search, Menu, Heart, User } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ShoppingCart, Heart, User } from "lucide-react";
+import { useEffect, useRef } from "react";
 import {
   AnimatePresence,
   motion,
@@ -14,20 +14,11 @@ import { getAccessToken } from "../../api/auth";
 import { CollectionGroupDropdown } from "./CategoryDropdown";
 import { categories } from "../data/categories";
 import logoIcon from "../../images/logo-icon.png";
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetClose,
-} from "./ui/sheet";
 
 export function Header() {
   const { navigate, page } = useNavigation();
   const { totalItems } = useCart();
   const { productIds } = useWishlist();
-  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const prefersReducedMotion = useReducedMotion();
   const cartIconAnimation = useAnimationControls();
@@ -64,107 +55,6 @@ export function Header() {
       {/* Main Header */}
       <div className="container mx-auto px-3 py-3 sm:px-4 sm:py-4">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
-          {/* Mobile Menu */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <button aria-label={t("Menu")} className="lg:hidden p-1.5 sm:p-2">
-                <Menu className="h-6 w-6" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>{t("Menu")}</SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-3 px-4">
-                <SheetClose asChild>
-                  <button
-                    onClick={() => navigate("home")}
-                    className={`text-foreground text-left hover:text-primary transition-colors ${page === "home" ? "text-primary" : ""}`}
-                  >
-                    {t("Home")}
-                  </button>
-                </SheetClose>
-
-                {/* Mobile Collections Dropdown */}
-                <div className="border-t border-border pt-3">
-                  <button
-                    onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
-                    className={`text-foreground text-left hover:text-primary transition-colors flex items-center justify-between w-full ${page === "category" ? "text-primary" : ""}`}
-                  >
-                    {t("Collections")}
-                    <span
-                      className={`transform transition-transform ${mobileDropdownOpen ? "rotate-180" : ""}`}
-                    >
-                      ▼
-                    </span>
-                  </button>
-
-                  {mobileDropdownOpen && (
-                    <div className="mt-3 ml-4 space-y-4 pb-3 border-b border-border">
-                      {categories.map((group: any) => (
-                        <div key={group.name}>
-                          <h4 className="text-xs font-semibold text-primary uppercase tracking-wide mb-2">
-                            {t(group.name)}
-                          </h4>
-                          <div className="space-y-2">
-                            {group.items.map((item: any) => (
-                              <SheetClose key={item.id} asChild>
-                                <button
-                                  onClick={() =>
-                                    navigate("category", { category: item.id })
-                                  }
-                                  className="block text-sm text-foreground/80 hover:text-primary transition-colors"
-                                >
-                                  {t(item.name)}
-                                </button>
-                              </SheetClose>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* <SheetClose asChild>
-                  <button
-                    onClick={() =>
-                      navigate("category", { category: "accessories" })
-                    }
-                    className={`text-foreground text-left hover:text-primary transition-colors ${page === "category" ? "text-primary" : ""}`}
-                  >
-                    Accessories
-                  </button>
-                </SheetClose> */}
-                <SheetClose asChild>
-                  <button
-                    onClick={() => navigate("contact")}
-                    className={`text-foreground text-left hover:text-primary transition-colors ${page === "contact" ? "text-primary" : ""}`}
-                  >
-                    {t("Contact")}
-                  </button>
-                </SheetClose>
-              </nav>
-              <div className="mt-6 border-t border-border px-4 pt-4">
-                <SheetClose asChild>
-                  <button
-                    onClick={openAccount}
-                    className="w-full rounded-md border border-border px-4 py-3 text-left text-foreground hover:bg-muted/80 transition-colors"
-                  >
-                    {t("Account")}
-                  </button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <button
-                    onClick={() => navigate("cart")}
-                    className="mt-3 w-full rounded-md border border-border px-4 py-3 text-left text-foreground hover:bg-muted/80 transition-colors"
-                  >
-                    {t("Cart")}
-                  </button>
-                </SheetClose>
-              </div>
-            </SheetContent>
-          </Sheet>
           <div
             className="flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 lg:flex-initial lg:gap-2"
             onClick={() => navigate("home")}

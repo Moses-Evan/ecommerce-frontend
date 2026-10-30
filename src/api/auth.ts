@@ -1,16 +1,73 @@
 const TOKEN_STORAGE_KEY = "niorra_access_token";
 const PROFILE_STORAGE_KEY = "niorra_auth_profile";
 const POST_LOGIN_DESTINATION_KEY = "niorra_post_login_destination";
+const API_ORIGIN_STORAGE_KEY = "niorra_api_origin";
 
 const authParameterNames = ["token", "access_token", "accessToken", "jwt"];
 
-export const API_ORIGIN = (
-  import.meta.env.VITE_API_ORIGIN ?? "https://api.niorra.eu"
-).replace(/\/$/, "");
+export const setApiOrigin = (origin: string) => {
+  const normalizedOrigin = origin.trim().replace(/\/$/, "");
+  if (!normalizedOrigin) return "";
 
-export const getGoogleAuthUrl = () =>
-  import.meta.env.VITE_GOOGLE_AUTH_URL ??
-  `${API_ORIGIN}/oauth2/authorization/google`;
+  localStorage.setItem(API_ORIGIN_STORAGE_KEY, normalizedOrigin);
+  return normalizedOrigin;
+};
+
+export const getApiOrigin = () => {
+  const urlOrigin =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("apiOrigin")
+      : null;
+
+  if (urlOrigin) {
+    return urlOrigin.replace(/\/$/, "");
+  }
+
+  const storedOrigin =
+    typeof window !== "undefined"
+      ? localStorage.getItem(API_ORIGIN_STORAGE_KEY)
+      : null;
+
+  if (storedOrigin) {
+    return storedOrigin.replace(/\/$/, "");
+  }
+
+  const runtimeOrigin = import.meta.env.VITE_API_ORIGIN;
+  if (runtimeOrigin) {
+    return runtimeOrigin.replace(/\/$/, "");
+  }
+
+  const defaultOrigin = "https://api.niorra.eu";
+  if (typeof window !== "undefined") {
+    localStorage.setItem(API_ORIGIN_STORAGE_KEY, defaultOrigin);
+  }
+  return defaultOrigin;
+};
+
+export const API_ORIGIN = getApiOrigin();
+
+export const getAppRedirectUrl = () => {
+  if (typeof window !== "undefined" && (window as any)?.Capacitor?.isNativePlatform?.()) {
+    return "niorra://auth";
+  }
+
+  const currentOrigin =
+    typeof window !== "undefined" ? window.location.origin : "https://niorra.eu";
+  return `${currentOrigin}/#account`;
+};
+
+export const getGoogleAuthUrl = () => {
+  const configuredOauthUrl =
+    import.meta.env.VITE_GOOGLE_AUTH_URL ||
+    `${API_ORIGIN}/oauth2/authorization/google`;
+
+  const authUrl = new URL(configuredOauthUrl, window.location.origin || "https://niorra.eu");
+  if ((window as any)?.Capacitor?.isNativePlatform?.()) {
+    authUrl.searchParams.set("redirect_uri", getAppRedirectUrl());
+  }
+
+  return authUrl.toString();
+};
 
 export const getAccessToken = () => localStorage.getItem(TOKEN_STORAGE_KEY);
 
@@ -213,6 +270,19 @@ export function initializeAuthFromRedirect() {
   const savedDestination = localStorage.getItem(POST_LOGIN_DESTINATION_KEY);
   const destination = savedDestination === "checkout" ? "checkout" : "account";
   localStorage.removeItem(POST_LOGIN_DESTINATION_KEY);
-  const nextUrl = `${url.origin}/#${destination}`;
-  window.history.replaceState({ page: destination, params: {} }, "", nextUrl);
+
+  const isNativeAppCallback =
+    (window as any)?.Capacitor?.isNativePlatform?.() ||
+    url.protocol === "niorra:";
+  const nextUrl = isNativeAppCallback
+    ? `niorra://auth/#${destination}`
+    : `${url.origin}/#${destination}`;
+
+  try {
+    window.history.replaceState({ page: destination, params: {} }, "", nextUrl);
+  } catch {
+    if (!isNativeAppCallback) {
+      window.location.assign(nextUrl);
+    }
+  }
 }
