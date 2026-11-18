@@ -64,7 +64,7 @@ export function CartPage() {
                 className="bg-card border border-border rounded-lg p-4 flex gap-4"
               >
                 <div
-                  className="w-24 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
+                  className="aspect-[3/4] w-24 shrink-0 cursor-pointer overflow-hidden rounded-lg bg-muted"
                   onClick={() => navigate("product", { productId: item.id })}
                 >
                   <ImageWithFallback

@@ -7,6 +7,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -20,6 +22,14 @@ import { Button } from "../components/ui/button";
 import { ProductCard } from "../components/ProductCard";
 import { AddressBook } from "../components/AddressBook";
 import { ProfileInformation } from "../components/ProfileInformation";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../components/ui/drawer";
 import { getAllProducts } from "../../api/productApi";
 import {
   getOrderById,
@@ -102,6 +112,7 @@ export function AccountPage() {
   const [activeSection, setActiveSection] = useState<AccountSection>(
     params.section ?? params.tab ?? "profile",
   );
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const isAuthenticated = Boolean(getAccessToken());
   const customerEmail = profile.email;
 
@@ -205,8 +216,11 @@ export function AccountPage() {
     (ordersPage - 1) * ORDERS_PER_PAGE,
     ordersPage * ORDERS_PER_PAGE,
   );
+  const activeSectionDetails =
+    sections.find(({ id }) => id === activeSection) ?? sections[0];
 
   const handleLogout = () => {
+    setAccountMenuOpen(false);
     clearAccessToken();
     navigate("login");
   };
@@ -223,7 +237,74 @@ export function AccountPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="lg:col-span-1">
-            <nav aria-label={t("Account menu")} className="space-y-1">
+            <div className="lg:hidden">
+              <Drawer open={accountMenuOpen} onOpenChange={setAccountMenuOpen}>
+                <DrawerTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left shadow-sm"
+                  >
+                    <activeSectionDetails.icon className="h-5 w-5 text-primary" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs text-muted-foreground">
+                        {t("Account menu")}
+                      </span>
+                      <span className="block font-medium">
+                        {t(activeSectionDetails.label)}
+                      </span>
+                    </span>
+                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent className="rounded-t-2xl border-border pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+                  <DrawerHeader className="text-left">
+                    <DrawerTitle>{t("Account menu")}</DrawerTitle>
+                    <DrawerDescription>
+                      {t("Choose an account section")}
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <nav
+                    aria-label={t("Account menu")}
+                    className="overflow-y-auto px-3 pb-2"
+                  >
+                    <div className="space-y-1">
+                      {sections.map(({ id, label, icon: Icon }) => (
+                        <button
+                          key={id}
+                          type="button"
+                          aria-current={
+                            activeSection === id ? "page" : undefined
+                          }
+                          onClick={() => {
+                            setActiveSection(id);
+                            setAccountMenuOpen(false);
+                          }}
+                          className={`flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors ${activeSection === id ? "bg-primary/10 text-primary" : "hover:bg-muted/60"}`}
+                        >
+                          <Icon className="h-5 w-5 shrink-0" />
+                          <span className="flex-1">{t(label)}</span>
+                          {activeSection === id && (
+                            <Check className="h-5 w-5 shrink-0" />
+                          )}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-destructive transition-colors hover:bg-destructive/10"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        <span>{t("Logout")}</span>
+                      </button>
+                    </div>
+                  </nav>
+                </DrawerContent>
+              </Drawer>
+            </div>
+            <nav
+              aria-label={t("Account menu")}
+              className="hidden space-y-1 lg:block"
+            >
               {sections.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}

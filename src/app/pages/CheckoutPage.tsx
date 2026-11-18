@@ -22,7 +22,7 @@ import { ProfileInformation } from "../components/ProfileInformation";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
-import { Wallet, CheckCircle, LoaderCircle } from "lucide-react";
+import { Wallet, CheckCircle, LoaderCircle, ChevronDown } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -277,6 +277,7 @@ export function CheckoutPage() {
             url: paypal.approvalUrl,
             toolbarColor: "#8f0d1d",
           });
+          setIsStartingPayment(false);
         } catch (error) {
           clearPendingPayPalOrderId();
           throw error;
@@ -577,6 +578,54 @@ export function CheckoutPage() {
       <div className="container mx-auto px-4">
         <h1 className="text-4xl mb-8">{t("Checkout")}</h1>
 
+        <details className="group mb-6 overflow-hidden rounded-xl border border-border bg-card shadow-sm lg:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 [&::-webkit-details-marker]:hidden">
+            <span className="min-w-0">
+              <span className="block font-medium">{t("Order Summary")}</span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                {items.length} {items.length === 1 ? "item" : "items"}
+              </span>
+            </span>
+            <span className="flex shrink-0 items-center gap-3">
+              <span className="font-semibold text-primary">
+                €{finalTotal.toLocaleString()}
+              </span>
+              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+            </span>
+          </summary>
+          <div className="border-t border-border px-4 pb-4 pt-3">
+            <div className="max-h-56 space-y-3 overflow-y-auto">
+              {items.map((item) => (
+                <div key={item.id} className="flex gap-3 text-sm">
+                  <span className="text-muted-foreground">
+                    {item.quantity}x
+                  </span>
+                  <span className="min-w-0 flex-1 truncate">{item.name}</span>
+                  <span className="shrink-0">
+                    €{(item.price * item.quantity).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 space-y-2 border-t border-border pt-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span>€{totalPrice.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Shipping</span>
+                <span>{shipping === 0 ? "FREE" : `€${shipping}`}</span>
+              </div>
+              <div className="flex justify-between border-t border-border pt-3 font-semibold">
+                <span>Total</span>
+                <span className="text-primary">
+                  €{finalTotal.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </details>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
@@ -615,25 +664,29 @@ export function CheckoutPage() {
                   transition={{ duration: prefersReducedMotion ? 0 : 0.22 }}
                   className="space-y-6"
                 >
-                  <div className="bg-card border border-border rounded-lg p-6">
-                    <h3 className="text-xl mb-4">{t("Shipping Address")}</h3>
-                    <AddressBook
-                      mode="select"
-                      selectedAddress={selectedAddress ?? undefined}
-                      onSelect={(address) => {
-                        setSelectedAddress(address);
-                        setAddressSelectionError("");
-                      }}
-                    />
-                    {addressSelectionError && (
-                      <p className="mt-3 text-sm text-destructive" role="alert">
-                        {addressSelectionError}
-                      </p>
-                    )}
-                  </div>
-
                   <form onSubmit={handleSubmitInfo} className="space-y-6">
                     <ProfileInformation title="Contact Information" />
+                    <div className="bg-card border border-border rounded-lg p-6">
+                      <h3 className="text-xl mb-4">
+                        {t("Shipping Address")}
+                      </h3>
+                      <AddressBook
+                        mode="select"
+                        selectedAddress={selectedAddress ?? undefined}
+                        onSelect={(address) => {
+                          setSelectedAddress(address);
+                          setAddressSelectionError("");
+                        }}
+                      />
+                      {addressSelectionError && (
+                        <p
+                          className="mt-3 text-sm text-destructive"
+                          role="alert"
+                        >
+                          {addressSelectionError}
+                        </p>
+                      )}
+                    </div>
                     <Button type="submit" size="lg" className="w-full">
                       {t("Continue to Payment")}
                     </Button>
@@ -699,7 +752,14 @@ export function CheckoutPage() {
                           onClick={handleStartPayPal}
                           disabled={isStartingPayment}
                         >
-                          <Wallet className="mr-2 h-5 w-5" />
+                          {isStartingPayment ? (
+                            <LoaderCircle
+                              className="mr-2 h-5 w-5 animate-spin"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <Wallet className="mr-2 h-5 w-5" />
+                          )}
                           {isStartingPayment
                             ? "Connecting to PayPal..."
                             : "Continue to PayPal"}
@@ -733,7 +793,7 @@ export function CheckoutPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="hidden lg:col-span-1 lg:block">
             <div className="bg-card border border-border rounded-lg p-6 self-start lg:sticky lg:top-24">
               <h3 className="text-xl mb-4">{t("Order Summary")}</h3>
 

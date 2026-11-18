@@ -1,5 +1,5 @@
-import { ShoppingCart, Heart, User } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { ShoppingCart, Heart, User, Search, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -11,19 +11,99 @@ import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getAccessToken } from "../../api/auth";
+import { getAllProducts } from "../../api/productApi";
+import { Product } from "../../types/Product";
 import { CollectionGroupDropdown } from "./CategoryDropdown";
 import { categories } from "../data/categories";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 import logoIcon from "../../images/logo-icon.png";
 
 export function Header() {
-  const { navigate, page } = useNavigation();
+  const { navigate, page, params } = useNavigation();
   const { totalItems } = useCart();
   const { productIds } = useWishlist();
   const { language, setLanguage, t } = useLanguage();
   const prefersReducedMotion = useReducedMotion();
   const cartIconAnimation = useAnimationControls();
   const previousTotalItems = useRef(totalItems);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(
+    typeof params.query === "string" ? params.query : "",
+  );
+  const [searchProducts, setSearchProducts] = useState<Product[] | null>(null);
+  const [searchProductsLoading, setSearchProductsLoading] = useState(false);
+  const [searchProductsError, setSearchProductsError] = useState(false);
   const openAccount = () => navigate(getAccessToken() ? "account" : "login");
+
+  useEffect(() => {
+    setSearchQuery(typeof params.query === "string" ? params.query : "");
+  }, [params.query]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+
+    searchInputRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSearchOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchOpen]);
+
+  useEffect(() => {
+    if (!searchOpen || searchProducts !== null) return;
+
+    let active = true;
+    setSearchProductsLoading(true);
+    setSearchProductsError(false);
+    getAllProducts()
+      .then((products) => {
+        if (active) setSearchProducts(products);
+      })
+      .catch((error: unknown) => {
+        console.error("Error fetching product search suggestions:", error);
+        if (active) setSearchProductsError(true);
+      })
+      .finally(() => {
+        if (active) setSearchProductsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [searchOpen, searchProducts]);
+
+  const searchSuggestions = searchProducts
+    ? searchProducts
+        .filter((product) => {
+          const query = searchQuery.trim().toLocaleLowerCase();
+          if (query.length < 2) return false;
+          return [
+            product.productName,
+            product.productDescription,
+            product.productCategory,
+            product.productType,
+            product.productSubType,
+            product.productFabricType,
+            product.productColor,
+            product.productBrand,
+            product.productSku,
+          ]
+            .filter(Boolean)
+            .some((value) => value.toLocaleLowerCase().includes(query));
+        })
+        .slice(0, 5)
+    : [];
+
+  const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+
+    navigate("search", { query });
+    setSearchOpen(false);
+  };
 
   useEffect(() => {
     if (
@@ -120,12 +200,19 @@ export function Header() {
                 EN
               </button>
             </div>
-            {/* <button
-              aria-label="Search products"
-              className="relative hidden md:block p-2 hover:bg-accent/10 rounded-full transition-colors cursor-pointer"
+            <button
+              type="button"
+              onClick={() => setSearchOpen((open) => !open)}
+              aria-label={t("Search products")}
+              aria-expanded={searchOpen}
+              className="relative cursor-pointer rounded-full p-1.5 transition-colors hover:bg-accent/10 sm:p-2"
             >
-              <Search className="h-5 w-5" />
-            </button> */}
+              {searchOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Search className="h-5 w-5" />
+              )}
+            </button>
             <button
               onClick={() => navigate("account", { tab: "wishlist" })}
               aria-label={`${t("View wishlist")}${productIds.length ? ` (${productIds.length})` : ""}`}
@@ -184,6 +271,86 @@ export function Header() {
             </button>
           </div>
         </div>
+        <AnimatePresence initial={false}>
+          {searchOpen && (
+            <motion.form
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -6 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.18 }}
+              onSubmit={submitSearch}
+              role="search"
+              className="relative"
+            >
+              <div className="mt-3 flex gap-2 border-t border-border pt-3 sm:mt-4 sm:pt-4">
+                <label className="sr-only" htmlFor="header-product-search">
+                  {t("Search products")}
+                </label>
+                <input
+                  ref={searchInputRef}
+                  id="header-product-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t("Search products...")}
+                  className="h-11 min-w-0 flex-1 rounded-full border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
+                <button
+                  type="submit"
+                  className="h-11 shrink-0 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  {t("Search")}
+                </button>
+              </div>
+              {searchQuery.trim().length >= 2 && (
+                <div className="absolute inset-x-0 top-full z-[60] mt-2 max-h-80 overflow-y-auto rounded-xl border border-border bg-background p-2 shadow-xl">
+                  {searchProductsLoading ? (
+                    <p className="px-3 py-4 text-sm text-muted-foreground">
+                      {t("Loading products...")}
+                    </p>
+                  ) : searchProductsError ? (
+                    <p role="alert" className="px-3 py-4 text-sm text-muted-foreground">
+                      {t("Unable to load products. Please try again.")}
+                    </p>
+                  ) : searchSuggestions.length > 0 ? (
+                    <ul aria-label={t("Search suggestions")} className="space-y-1">
+                      {searchSuggestions.map((product) => (
+                        <li key={product.id}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigate("product", { productId: product.id });
+                              setSearchOpen(false);
+                            }}
+                            className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-muted"
+                          >
+                            <ImageWithFallback
+                              src={product.productImages?.[0]}
+                              alt=""
+                              className="h-12 w-10 shrink-0 rounded object-cover"
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-medium">
+                                {product.productName}
+                              </span>
+                              <span className="block text-xs text-muted-foreground">
+                                €{product.productSellingPrice.toLocaleString()}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : searchProducts ? (
+                    <p className="px-3 py-4 text-sm text-muted-foreground">
+                      {t("No products found")}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+            </motion.form>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

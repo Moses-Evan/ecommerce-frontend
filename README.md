@@ -51,8 +51,7 @@ keep its HTTPS return routes pointed at the frontend:
 pages forward PayPal's callback parameters to the app using an Android
 `intent://` link. The frontend hosting must serve the SPA for both routes, and
 the backend adds a `nativeApp=true` marker only for native checkout callbacks.
-Android Chrome Custom Tabs show the payment-site address by design; the
-Capacitor Browser plugin does not provide an option to hide it.
+The secure browser tab's address bar is expected and cannot be hidden.
 
 ## Google OAuth
 

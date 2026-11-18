@@ -7,7 +7,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CartProvider } from "./contexts/CartContext";
+import { CartProvider, useCart } from "./contexts/CartContext";
 import {
   NavigationProvider,
   useNavigation,
@@ -23,12 +23,14 @@ import { LoginPage } from "./pages/LoginPage";
 import { AccountPage } from "./pages/AccountPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
-import { WishlistProvider } from "./contexts/WishlistContext";
+import { WishlistProvider, useWishlist } from "./contexts/WishlistContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { Toaster } from "./components/ui/sonner";
 
 function AppContent() {
   const { currentPage, params, navigate } = useNavigation();
+  const { totalItems } = useCart();
+  const { productIds } = useWishlist();
   const prefersReducedMotion = useReducedMotion();
   const [isMobileApp, setIsMobileApp] = useState(
     typeof window !== "undefined" ? window.innerWidth < 768 : false,
@@ -66,6 +68,15 @@ function AppContent() {
             occasion={params.occasion}
             priceMin={params.priceMin}
             priceMax={params.priceMax}
+            search={params.search}
+          />
+        );
+      case "search":
+        return (
+          <CategoryPage
+            category="all"
+            search={params.query}
+            searchMode
           />
         );
       case "product":
@@ -169,22 +180,40 @@ function AppContent() {
                     ? currentPage === "category"
                     : key === "cart"
                       ? currentPage === "cart"
-                      : key === "account"
-                        ? currentPage === "account"
-                        : false;
+                      : key === "wishlist"
+                        ? currentPage === "account" &&
+                          (params.tab === "wishlist" ||
+                            params.section === "wishlist")
+                        : key === "account"
+                          ? currentPage === "account"
+                          : false;
+              const badgeCount =
+                key === "cart"
+                  ? totalItems
+                  : key === "wishlist"
+                    ? productIds.length
+                    : 0;
 
               return (
                 <button
                   key={key}
                   type="button"
                   onClick={() => handleMobileTab(key)}
+                  aria-label={`${label}${badgeCount ? ` (${badgeCount})` : ""}`}
                   className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-[10px] font-medium transition-all ${
                     isActive
                       ? "bg-[#fff3d8] text-[#6e1120]"
                       : "text-muted-foreground"
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <span className="relative inline-flex">
+                    <Icon className="h-5 w-5" />
+                    {badgeCount > 0 && (
+                      <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] leading-none text-primary-foreground">
+                        {badgeCount > 99 ? "99+" : badgeCount}
+                      </span>
+                    )}
+                  </span>
                   <span>{label}</span>
                 </button>
               );

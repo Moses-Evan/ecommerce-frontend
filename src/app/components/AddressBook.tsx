@@ -44,6 +44,13 @@ export function AddressBook(props: AddressBookProps) {
     getAddresses()
       .then((result) => {
         setAddresses(result);
+        if (
+          props.mode === "select" &&
+          !props.selectedAddress &&
+          result.length > 0
+        ) {
+          props.onSelect(result[0]);
+        }
         if (result.length === 0) setShowForm(true);
       })
       .catch(() => {

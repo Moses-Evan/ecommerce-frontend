@@ -16,6 +16,7 @@ import {
 type Page =
   | "home"
   | "category"
+  | "search"
   | "product"
   | "cart"
   | "checkout"
@@ -84,6 +85,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       const pages: Page[] = [
         "home",
         "category",
+        "search",
         "product",
         "cart",
         "checkout",

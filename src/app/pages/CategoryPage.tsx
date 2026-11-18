@@ -29,6 +29,8 @@ interface CategoryPageProps {
   occasion?: string;
   priceMin?: number;
   priceMax?: number;
+  search?: string;
+  searchMode?: boolean;
 }
 
 // Category title mapping
@@ -147,6 +149,8 @@ export function CategoryPage({
   occasion,
   priceMin,
   priceMax,
+  search,
+  searchMode = false,
 }: CategoryPageProps) {
   const { navigate } = useNavigation();
   const { t } = useLanguage();
@@ -160,6 +164,9 @@ export function CategoryPage({
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(
+    null,
+  );
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
@@ -208,6 +215,7 @@ export function CategoryPage({
     );
   }, [products]);
   const showSareeCollections =
+    searchMode ||
     getCategoryMatchKeys(category).has("sarees") ||
     sareeCollections.some(
       (collection) => collection.id === normalizeCategory(category),
@@ -222,9 +230,36 @@ export function CategoryPage({
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
+    const searchQuery = search?.trim().toLowerCase();
+    if (searchQuery) {
+      filtered = filtered.filter((product) =>
+        [
+          product.productName,
+          product.productDescription,
+          product.productCategory,
+          product.productType,
+          product.productSubType,
+          product.productFabricType,
+          product.productColor,
+          product.productBrand,
+          product.productSku,
+        ]
+          .filter(Boolean)
+          .some((value) =>
+            value.toLowerCase().includes(searchQuery),
+          ),
+      );
+    }
+
     // Filter by category (from route parameter)
     if (category && category !== "all" && !routeOccasion) {
       filtered = filtered.filter((p) => productMatchesCategory(p, category));
+    }
+
+    if (selectedCollection) {
+      filtered = filtered.filter((p) =>
+        productMatchesCategory(p, selectedCollection),
+      );
     }
 
     const activeOccasion = selectedOccasion || routeOccasion?.id;
@@ -285,11 +320,13 @@ export function CategoryPage({
     return filtered;
   }, [
     products,
+    search,
     category,
     priceRange,
     selectedFabrics,
     selectedColors,
     selectedOccasion,
+    selectedCollection,
     routeOccasion,
     showOccasions,
     sortBy,
@@ -297,7 +334,9 @@ export function CategoryPage({
 
   const categoryInfo = allCategories.find((cat) => cat.id === category);
   const categoryTitle =
-    category && category !== "all"
+    search?.trim()
+      ? `${t("Search results")}: "${search.trim()}"`
+      : category && category !== "all"
       ? t(
           categoryTitleMap[category] ||
             categoryInfo?.name ||
@@ -328,6 +367,7 @@ export function CategoryPage({
     setSelectedFabrics([]);
     setSelectedColors([]);
     setSelectedOccasion(null);
+    setSelectedCollection(null);
     setPriceRange([0, 1000]);
   };
 
@@ -445,7 +485,7 @@ export function CategoryPage({
           </p>
         </div>
 
-        {showOccasions && (
+        {(showOccasions || searchMode) && (
           <section className="mb-8 border-y border-border/70 py-5">
             {showSareeCollections && sareeCollections.length > 0 && (
               <div className="mb-5">
@@ -454,8 +494,9 @@ export function CategoryPage({
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {sareeCollections.map((collection) => {
-                    const isSelected =
-                      normalizeCategory(category) === collection.id;
+                    const isSelected = searchMode
+                      ? selectedCollection === collection.id
+                      : normalizeCategory(category) === collection.id;
 
                     return (
                       <Button
@@ -468,9 +509,15 @@ export function CategoryPage({
                             ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
                             : ""
                         }`}
-                        onClick={() =>
-                          navigate("category", { category: collection.id })
-                        }
+                        onClick={() => {
+                          if (searchMode) {
+                            setSelectedCollection((current) =>
+                              current === collection.id ? null : collection.id,
+                            );
+                          } else {
+                            navigate("category", { category: collection.id });
+                          }
+                        }}
                       >
                         {collection.name}
                       </Button>
@@ -530,7 +577,7 @@ export function CategoryPage({
         )}
 
         {/* Category Showcase - Show all categories when viewing all collections */}
-        {category === "all" && (
+        {category === "all" && !searchMode && (
           <div className="mb-12">
             <h3 className="text-2xl font-bold mb-6">{t("Shop by Category")}</h3>
             <div className="grid grid-cols-1 gap-8">
