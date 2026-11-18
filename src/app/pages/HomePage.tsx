@@ -12,7 +12,6 @@ import { Button } from "../components/ui/button";
 import { PremiumCollectionsSection } from "../components/PremiumCollectionsSection";
 import { useEffect, useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
-import { categories as sharedCategories } from "../data/categories";
 
 import niorraCover from "../../images/niorra-cover.jpg";
 
@@ -37,48 +36,6 @@ export function HomePage() {
     mediaQuery.addListener(handleResize);
     return () => mediaQuery.removeListener(handleResize);
   }, []);
-
-  const mobileCategories = [
-    {
-      title: "Wedding Collection",
-      categoryId: "wedding",
-      image:
-        "https://images.unsplash.com/photo-1688789913221-071a44294edf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWRkaW5nJTIwc2FyZWUlMjBicmlkYWx8ZW58MXx8fHwxNzU5NTg5NTUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      itemCount: "150+",
-    },
-    {
-      title: "Festive Elegance",
-      categoryId: "festive",
-      image:
-        "https://images.unsplash.com/photo-1756483571456-6fa86cb1ae53?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZXN0aXZlJTIwc2FyZWUlMjB0cmFkaXRpb25hbHxlbnwxfHx8fDE3NTk1ODk1NTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      itemCount: "200+",
-    },
-    {
-      title: "Designer Sarees",
-      categoryId: "designer",
-      image:
-        "https://images.unsplash.com/photo-1756483509177-bbabd67a3234?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ25lciUyMHNhcmVlJTIwbHV4dXJ5fGVufDF8fHx8MTc1OTU4OTU1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      itemCount: "100+",
-    },
-    {
-      title: "Casual Wear",
-      categoryId: "casual",
-      image:
-        "https://images.unsplash.com/photo-1692107271822-50cc09b2bf73?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXN1YWwlMjBzYXJlZSUyMGNvdHRvbnxlbnwxfHx8fDE3NTk1ODk1NTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      itemCount: "180+",
-    },
-  ];
-
-  const mobileCollectionCards = sharedCategories.flatMap((group) =>
-    group.items.slice(0, 2).map((item) => ({
-      title: item.name,
-      categoryId: item.id,
-      image:
-        mobileCategories.find((card) => card.categoryId === item.id)?.image ??
-        "https://images.unsplash.com/photo-1688789913221-071a44294edf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWRkaW5nJTIwc2FyZWUlMjBicmlkYWx8ZW58MXx8fHwxNzU5NTg5NTUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      itemCount: `${item.id ? "Collection" : "New"}`,
-    })),
-  );
 
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -139,44 +96,7 @@ export function HomePage() {
     <main>
       {!isMobileApp && <Hero />}
 
-      {isMobileApp && (
-        <section className="border-b border-border bg-gradient-to-b from-[#fff7eb] to-white py-4">
-          <div className="container mx-auto px-4">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-secondary">
-                {t("Collections")}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {mobileCollectionCards.map((category) => (
-                <button
-                  key={category.categoryId}
-                  type="button"
-                  onClick={() =>
-                    navigate("category", { category: category.categoryId })
-                  }
-                  className="group relative overflow-hidden rounded-2xl border border-border bg-white p-0 text-left shadow-[0_12px_30px_rgba(80,20,28,0.06)] transition-transform duration-200 active:scale-[0.98]"
-                >
-                  <div className="h-28 overflow-hidden">
-                    <img
-                      src={category.image}
-                      alt={category.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-1 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-3 text-white">
-                    <div className="text-base font-medium">{category.title}</div>
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-white/80">
-                      {category.itemCount}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <PremiumCollectionsSection products={products} loading={loading} />
 
       {/* Shop by Price */}
       <section className="border-b border-border py-8 md:py-16">
@@ -228,8 +148,6 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-      <PremiumCollectionsSection products={products} loading={loading} />
 
       {/* Categories Section */}
       {/* <section className="py-20">

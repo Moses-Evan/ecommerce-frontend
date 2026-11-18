@@ -6,6 +6,12 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
+import {
+  getPendingPayPalOrderId,
+  initializeAuthFromRedirect,
+} from "../../api/auth";
 
 type Page =
   | "home"
@@ -90,7 +96,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       ];
       const page =
         requestedPage === "paypal-return" ||
-        (hasPayPalReturn && sessionStorage.getItem("pendingPayPalOrderId"))
+        (hasPayPalReturn && getPendingPayPalOrderId())
           ? "paypal-return"
           : pages.includes(requestedPage)
             ? requestedPage
@@ -108,8 +114,101 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       setParams(state.params || {});
     };
 
+    const isNativeApp = Boolean(
+      (window as any)?.Capacitor?.isNativePlatform?.(),
+    );
+    const handleAppUrl = (callbackUrl: string) => {
+      const callback = new URL(callbackUrl);
+      const callbackHash = callback.hash.slice(1);
+      const callbackParams = [
+        callback.searchParams,
+        new URLSearchParams(
+          callbackHash.includes("?")
+            ? callbackHash.slice(callbackHash.indexOf("?") + 1)
+            : callbackHash,
+        ),
+      ];
+      const hasPayPalId = callbackParams.some(
+        (searchParams) => searchParams.has("PayerID"),
+      );
+      const paypalLocation = `${callback.hostname}${callback.pathname}`.toLowerCase();
+      const isPayPalPath = paypalLocation.includes("paypal");
+      const isCancelCallback =
+        isPayPalPath && paypalLocation.includes("cancel");
+      const callbackToken = callbackParams
+        .map((searchParams) => searchParams.get("token"))
+        .find(Boolean);
+      const isPayPalToken =
+        Boolean(getPendingPayPalOrderId()) &&
+        Boolean(callbackToken) &&
+        callbackToken?.split(".").length !== 3;
+
+      if (isPayPalPath || hasPayPalId || isPayPalToken) {
+        const paypalState = isCancelCallback ? "cancel" : "return";
+        const nextUrl = `/#checkout?paypal=${paypalState}`;
+        window.history.replaceState(
+          { page: "checkout", params: {} },
+          "",
+          nextUrl,
+        );
+        setCurrentPage("checkout");
+        setParams({});
+        void Browser.close().catch((error: unknown) => {
+          console.error("Unable to close the PayPal browser:", error);
+        });
+        return;
+      }
+
+      const destination = initializeAuthFromRedirect(callbackUrl);
+      if (!destination) return;
+
+      setCurrentPage(destination);
+      setParams({});
+      void Browser.close().catch((error: unknown) => {
+        console.error("Unable to close the sign-in browser:", error);
+      });
+    };
+
+    let isMounted = true;
+    const nativeBackHook = isNativeApp
+      ? CapacitorApp.addListener("backButton", ({ canGoBack }) => {
+          if (canGoBack && window.history.length > 1) {
+            window.history.back();
+          }
+        })
+      : null;
+    const appUrlOpenHook = isNativeApp
+      ? CapacitorApp.addListener("appUrlOpen", ({ url }) => {
+          handleAppUrl(url);
+        })
+      : null;
+
+    if (isNativeApp) {
+      void CapacitorApp.getLaunchUrl()
+        .then((launchUrl) => {
+          if (!isMounted || !launchUrl?.url) return;
+          handleAppUrl(launchUrl.url);
+        })
+        .catch((error: unknown) => {
+          console.error("Unable to read the app launch URL:", error);
+        });
+    }
+
     window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("popstate", handlePopState);
+      void nativeBackHook
+        ?.then((listener) => listener.remove())
+        .catch((error: unknown) => {
+          console.error("Unable to remove the native back listener:", error);
+        });
+      void appUrlOpenHook
+        ?.then((listener) => listener.remove())
+        .catch((error: unknown) => {
+          console.error("Unable to remove the app URL listener:", error);
+        });
+    };
   }, []);
 
   const navigate = useCallback(

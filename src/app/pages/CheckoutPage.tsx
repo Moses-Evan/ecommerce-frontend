@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { Address } from "../../api/addressApi";
 import {
+  clearPendingPayPalOrderId,
   getAccessToken,
   getAuthenticatedProfileWithFallback,
+  getPendingPayPalOrderId,
+  setPendingPayPalOrderId,
   setPostLoginDestination,
 } from "../../api/auth";
 import {
@@ -22,6 +26,7 @@ import { Wallet, CheckCircle, LoaderCircle } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
+import { Browser } from "@capacitor/browser";
 
 const confettiPieces = Array.from({ length: 110 }, (_, index) => ({
   left: (index * 47) % 100,
@@ -42,6 +47,23 @@ const confettiPieces = Array.from({ length: 110 }, (_, index) => ({
   width: index % 3 === 0 ? 6 : 9,
   height: index % 3 === 0 ? 12 : 7,
 }));
+
+function getServerErrorMessage(data: unknown): string | undefined {
+  if (typeof data === "string") return data;
+  if (!data || typeof data !== "object") return undefined;
+
+  const record = data as Record<string, unknown>;
+  for (const key of ["message", "detail", "title", "error"]) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value;
+    if (value && typeof value === "object") {
+      const nestedMessage = getServerErrorMessage(value);
+      if (nestedMessage) return nestedMessage;
+    }
+  }
+
+  return undefined;
+}
 
 export function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -77,14 +99,15 @@ export function CheckoutPage() {
       ? window.location.hash.slice(window.location.hash.indexOf("?") + 1)
       : "",
   );
-  const isPayPalCancel = window.location.pathname.endsWith(
-    "/checkout/paypal/cancel",
-  );
+  const isPayPalCancel =
+    window.location.pathname.endsWith("/checkout/paypal/cancel") ||
+    hashParams.get("paypal") === "cancel";
   const isPayPalReturn =
     window.location.pathname.endsWith("/checkout/paypal/return") ||
     isPayPalCancel ||
     window.location.pathname.endsWith("/paypal-return") ||
     hashRoute === "paypal-return" ||
+    hashParams.has("paypal") ||
     urlParams.has("token") ||
     urlParams.has("PayerID") ||
     hashParams.has("token") ||
@@ -122,7 +145,7 @@ export function CheckoutPage() {
   useEffect(() => {
     if (!isPayPalCancel || cancelStarted.current) return;
 
-    const pendingOrderId = sessionStorage.getItem("pendingPayPalOrderId");
+    const pendingOrderId = getPendingPayPalOrderId();
     if (!pendingOrderId || !getAccessToken()) {
       setCancelStatus("unavailable");
       return;
@@ -132,10 +155,8 @@ export function CheckoutPage() {
     setCancelStatus("processing");
     cancelPayPalOrder(pendingOrderId)
       .then(() => {
-        if (
-          sessionStorage.getItem("pendingPayPalOrderId") === pendingOrderId
-        ) {
-          sessionStorage.removeItem("pendingPayPalOrderId");
+        if (getPendingPayPalOrderId() === pendingOrderId) {
+          clearPendingPayPalOrderId();
         }
         setCancelStatus("cancelled");
       })
@@ -147,7 +168,7 @@ export function CheckoutPage() {
   }, [cancelRetryCount, isPayPalCancel]);
 
   useEffect(() => {
-    const pendingOrderId = sessionStorage.getItem("pendingPayPalOrderId");
+    const pendingOrderId = getPendingPayPalOrderId();
     if (
       !isPayPalReturn ||
       isPayPalCancel ||
@@ -166,7 +187,7 @@ export function CheckoutPage() {
         }
 
         setCompletedOrderId(pendingOrderId);
-        sessionStorage.removeItem("pendingPayPalOrderId");
+        clearPendingPayPalOrderId();
         window.history.replaceState(
           { page: "checkout", params: {} },
           "",
@@ -211,6 +232,7 @@ export function CheckoutPage() {
 
     setIsStartingPayment(true);
     setPaymentError("");
+    let paymentStage = "loading your account";
     try {
       const profile = await getAuthenticatedProfileWithFallback();
       if (!profile.email) {
@@ -221,6 +243,7 @@ export function CheckoutPage() {
         return;
       }
 
+      paymentStage = "creating your order";
       const order = await createOrder({
         customerName: profile.name || selectedAddress.name,
         customerEmail: profile.email,
@@ -237,17 +260,58 @@ export function CheckoutPage() {
         throw new Error("The order service did not return an order ID.");
       }
 
-      const paypal = await startPayPalApproval(order.id);
+      const isNativeApp = Boolean(
+        (window as any)?.Capacitor?.isNativePlatform?.(),
+      );
+      paymentStage = "requesting PayPal approval";
+      const paypal = await startPayPalApproval(order.id, isNativeApp);
       if (!paypal.approvalUrl) {
         throw new Error("The PayPal service did not return an approval URL.");
       }
 
-      sessionStorage.setItem("pendingPayPalOrderId", String(order.id));
-      window.location.assign(paypal.approvalUrl);
+      setPendingPayPalOrderId(order.id);
+      paymentStage = "opening PayPal";
+      if (isNativeApp) {
+        try {
+          await Browser.open({
+            url: paypal.approvalUrl,
+            toolbarColor: "#8f0d1d",
+          });
+        } catch (error) {
+          clearPendingPayPalOrderId();
+          throw error;
+        }
+      } else {
+        window.location.assign(paypal.approvalUrl);
+      }
     } catch (error: unknown) {
-      console.error("Could not start PayPal checkout:", error);
-      const details =
-        error instanceof Error ? error.message : "Please try again.";
+      let details = error instanceof Error ? error.message : "Please try again.";
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const responseData: unknown = error.response?.data;
+        const serverMessage = getServerErrorMessage(responseData);
+        const requestPath = error.config?.url;
+        details = [
+          `${paymentStage} failed`,
+          requestPath ? `(${error.config?.method?.toUpperCase() || "GET"} ${requestPath})` : "",
+          status ? `(HTTP ${status})` : "",
+          serverMessage ? `: ${serverMessage}` : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+        console.error("Could not start PayPal checkout:", {
+          stage: paymentStage,
+          request: requestPath
+            ? `${error.config?.method?.toUpperCase() || "GET"} ${requestPath}`
+            : undefined,
+          status,
+          response: responseData,
+          error,
+        });
+      } else {
+        console.error("Could not start PayPal checkout:", error);
+        details = `${paymentStage} failed: ${details}`;
+      }
       setPaymentError(`Could not start PayPal checkout: ${details}`);
       setIsStartingPayment(false);
     }
@@ -457,7 +521,7 @@ export function CheckoutPage() {
   }
 
   if (isPayPalReturn) {
-    const pendingOrderId = sessionStorage.getItem("pendingPayPalOrderId");
+    const pendingOrderId = getPendingPayPalOrderId();
     return (
       <div className="min-h-screen py-20">
         <div className="container mx-auto px-4">
@@ -670,7 +734,7 @@ export function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-card border border-border rounded-lg p-6 sticky top-24">
+            <div className="bg-card border border-border rounded-lg p-6 self-start lg:sticky lg:top-24">
               <h3 className="text-xl mb-4">{t("Order Summary")}</h3>
 
               <div className="space-y-3 mb-4">

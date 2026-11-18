@@ -44,6 +44,16 @@ captures the order only after PayPal approves it. For production deployments,
 move order creation and capture to a server endpoint so the server can validate
 the cart total before fulfilling the order.
 
+On Android, PayPal approval opens in a Capacitor browser tab. The backend must
+keep its HTTPS return routes pointed at the frontend:
+`https://niorra.eu/checkout/paypal/return` and
+`https://niorra.eu/checkout/paypal/cancel`. On Android these hosted callback
+pages forward PayPal's callback parameters to the app using an Android
+`intent://` link. The frontend hosting must serve the SPA for both routes, and
+the backend adds a `nativeApp=true` marker only for native checkout callbacks.
+Android Chrome Custom Tabs show the payment-site address by design; the
+Capacitor Browser plugin does not provide an option to hide it.
+
 ## Google OAuth
 
 The login page starts Google OAuth at

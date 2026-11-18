@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
@@ -83,6 +83,25 @@ export function PremiumCollectionsSection({
 }: PremiumCollectionsSectionProps) {
   const { navigate } = useNavigation();
   const { t } = useLanguage();
+  const [isMobileApp, setIsMobileApp] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const handleResize = () => setIsMobileApp(mediaQuery.matches);
+
+    handleResize();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", handleResize);
+      return () => mediaQuery.removeEventListener("change", handleResize);
+    }
+
+    mediaQuery.addListener(handleResize);
+    return () => mediaQuery.removeListener(handleResize);
+  }, []);
+
   const items = useMemo(
     () => (collections ?? buildCollectionsFromProducts(products)).slice(0, 4),
     [collections, products],
@@ -91,6 +110,42 @@ export function PremiumCollectionsSection({
   if (!loading && items.length === 0) {
     return null;
   }
+
+  const renderCollectionCard = (collection: (typeof items)[number], index: number) => (
+    <motion.button
+      key={collection.id}
+      type="button"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.45, delay: index * 0.08 }}
+      onClick={() => navigate("category", { category: collection.categorySlug })}
+      className="group relative block overflow-visible rounded-[1.75rem] border border-white/60 bg-white/80 text-left shadow-[0_20px_50px_rgba(15,23,42,0.08)]"
+    >
+      <div className="relative h-56 overflow-hidden rounded-[1.75rem] sm:h-64">
+        <ImageWithFallback
+          src={collection.image}
+          alt={collection.title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-4 text-white sm:p-5">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-white/70">
+              {collection.label}
+            </p>
+            <h3 className="mt-2 text-xl font-semibold sm:text-2xl">
+              {collection.title}
+            </h3>
+          </div>
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-2 text-xs font-medium uppercase tracking-[0.2em] backdrop-blur-sm">
+            {t("View")}
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </div>
+      </div>
+    </motion.button>
+  );
 
   return (
     <section className="relative overflow-hidden px-4 py-16 md:px-6 md:py-20">
@@ -146,67 +201,64 @@ export function PremiumCollectionsSection({
                   </div>
                 </div>
               ))
-            : items.map((collection, index) => (
-                <motion.div
-                  key={collection.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.55, delay: index * 0.12 }}
-                  className="grid gap-6 rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl md:grid-cols-[1.05fr_1.45fr]"
-                >
-                  <div className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-white via-rose-50 to-orange-50 shadow-inner shadow-rose-100/50">
-                    <ImageWithFallback
-                      src={collection.image}
-                      alt={collection.title}
-                      className="h-full w-full min-h-[24rem] object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
-                    <div className="absolute  bottom-0 flex flex-col gap-4 p-6 text-white">
-                      {/* <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white shadow-sm backdrop-blur-xl">
-                        {collection.label}
-                      </span>
-                      <div>
-                        <h3 className="text-3xl pl-2 font-semibold tracking-tight text-white md:text-4xl">
-                          {collection.title}
-                        </h3>
-                        <p className="mt-3 max-w-xl text-sm leading-6 text-white/85 sm:text-base">
-                          {collection.description}
-                        </p>
-                      </div> */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          navigate("category", {
-                            category: collection.categorySlug,
-                          })
-                        }
-                        className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
-                      >
-                        {t("View")} {collection.title}
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
-                    </div>
+            : isMobileApp
+              ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {items.map((collection, index) => renderCollectionCard(collection, index))}
                   </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {collection.products.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        id={product.id}
-                        productName={product.productName}
-                        productSellingPrice={product.productSellingPrice}
-                        productMrp={product.productMrp}
-                        productImages={product.productImages}
-                        productBadges={product.productBadges}
-                        productFabricType={product.productFabricType}
-                        productDiscount={product.productDiscount}
-                        productStock={product.productStock}
+                )
+              : items.map((collection, index) => (
+                  <motion.div
+                    key={collection.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.55, delay: index * 0.12 }}
+                    className="grid gap-6 rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl md:grid-cols-[1.05fr_1.45fr]"
+                  >
+                    <div className="relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-white via-rose-50 to-orange-50 shadow-inner shadow-rose-100/50">
+                      <ImageWithFallback
+                        src={collection.image}
+                        alt={collection.title}
+                        className="h-full w-full min-h-[24rem] object-cover"
                       />
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 p-6 text-white">
+                          <div className="w-full">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                navigate("category", {
+                                  category: collection.categorySlug,
+                                })
+                              }
+                              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-900/20 transition duration-300 hover:bg-accent cursor-pointer"
+                            >
+                              {t("View")} {collection.title}
+                              <ArrowRight className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                      {collection.products.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          id={product.id}
+                          productName={product.productName}
+                          productSellingPrice={product.productSellingPrice}
+                          productMrp={product.productMrp}
+                          productImages={product.productImages}
+                          productBadges={product.productBadges}
+                          productFabricType={product.productFabricType}
+                          productDiscount={product.productDiscount}
+                          productStock={product.productStock}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
         </div>
       </div>
     </section>

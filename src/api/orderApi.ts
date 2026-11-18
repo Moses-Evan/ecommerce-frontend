@@ -79,8 +79,15 @@ export async function getOrdersByCustomerEmail(email: string) {
   return response.data;
 }
 
-export async function startPayPalApproval(orderId: string | number) {
-  const response = await API.post<PayPalApproval>(`/orders/${orderId}/paypal`);
+export async function startPayPalApproval(
+  orderId: string | number,
+  nativeApp = false,
+) {
+  const response = await API.post<PayPalApproval>(
+    `/orders/${orderId}/paypal`,
+    null,
+    { params: nativeApp ? { nativeApp: true } : undefined },
+  );
   return response.data;
 }
 

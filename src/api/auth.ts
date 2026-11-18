@@ -2,6 +2,7 @@ const TOKEN_STORAGE_KEY = "niorra_access_token";
 const PROFILE_STORAGE_KEY = "niorra_auth_profile";
 const POST_LOGIN_DESTINATION_KEY = "niorra_post_login_destination";
 const API_ORIGIN_STORAGE_KEY = "niorra_api_origin";
+const PENDING_PAYPAL_ORDER_ID_KEY = "niorra_pending_paypal_order_id";
 
 const authParameterNames = ["token", "access_token", "accessToken", "jwt"];
 
@@ -212,8 +213,26 @@ export function setPostLoginDestination(destination: "checkout") {
   localStorage.setItem(POST_LOGIN_DESTINATION_KEY, destination);
 }
 
-export function initializeAuthFromRedirect() {
-  const url = new URL(window.location.href);
+export function setPendingPayPalOrderId(orderId: string | number) {
+  const value = String(orderId);
+  localStorage.setItem(PENDING_PAYPAL_ORDER_ID_KEY, value);
+  sessionStorage.setItem("pendingPayPalOrderId", value);
+}
+
+export function getPendingPayPalOrderId() {
+  return (
+    localStorage.getItem(PENDING_PAYPAL_ORDER_ID_KEY) ||
+    sessionStorage.getItem("pendingPayPalOrderId")
+  );
+}
+
+export function clearPendingPayPalOrderId() {
+  localStorage.removeItem(PENDING_PAYPAL_ORDER_ID_KEY);
+  sessionStorage.removeItem("pendingPayPalOrderId");
+}
+
+export function initializeAuthFromRedirect(callbackUrl?: string) {
+  const url = new URL(callbackUrl ?? window.location.href);
   const hash = url.hash.slice(1);
   const fragmentParams = new URLSearchParams(
     hash.includes("?") ? hash.slice(hash.indexOf("?") + 1) : hash,
@@ -239,15 +258,15 @@ export function initializeAuthFromRedirect() {
     url.pathname.endsWith("/checkout/paypal/return") ||
     url.pathname.endsWith("/checkout/paypal/cancel") ||
     url.pathname.endsWith("/paypal-return") ||
-    (Boolean(sessionStorage.getItem("pendingPayPalOrderId")) &&
+    (Boolean(getPendingPayPalOrderId()) &&
       hasPayPalCallback);
-  if (isPayPalReturn) return;
+  if (isPayPalReturn) return null;
 
   const token = authParameterNames
     .map((name) => url.searchParams.get(name) ?? fragmentParams.get(name))
     .find((value) => value);
 
-  if (!token) return;
+  if (!token) return null;
 
   localStorage.setItem(TOKEN_STORAGE_KEY, token);
   const getParameter = (name: string) =>
@@ -275,7 +294,7 @@ export function initializeAuthFromRedirect() {
     (window as any)?.Capacitor?.isNativePlatform?.() ||
     url.protocol === "niorra:";
   const nextUrl = isNativeAppCallback
-    ? `niorra://auth/#${destination}`
+    ? `/#${destination}`
     : `${url.origin}/#${destination}`;
 
   try {
@@ -285,4 +304,6 @@ export function initializeAuthFromRedirect() {
       window.location.assign(nextUrl);
     }
   }
+
+  return destination;
 }
