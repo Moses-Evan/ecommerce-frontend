@@ -1,4 +1,3 @@
-
 workflows:
   niorra-ios:
     name: Niorra iOS Build
@@ -7,7 +6,6 @@ workflows:
 
     environment:
       xcode: latest
-      cocoapods: default
 
     scripts:
       - name: Install Node dependencies
@@ -22,10 +20,12 @@ workflows:
         script: |
           npx cap sync ios
 
-      - name: Install CocoaPods dependencies
+      - name: Resolve Swift Package dependencies
         script: |
-          cd ios/App
-          pod install
+          xcodebuild \
+            -resolvePackageDependencies \
+            -project ios/App/App.xcodeproj \
+            -scheme App
 
       - name: Build iOS Simulator application
         script: |
