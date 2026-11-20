@@ -1,0 +1,44 @@
+
+workflows:
+  niorra-ios:
+    name: Niorra iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    environment:
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Install Node dependencies
+        script: |
+          npm ci
+
+      - name: Build React frontend
+        script: |
+          npm run build
+
+      - name: Sync Capacitor iOS
+        script: |
+          npx cap sync ios
+
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios/App
+          pod install
+
+      - name: Build iOS Simulator application
+        script: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ios/App/build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+    artifacts:
+      - ios/App/build/DerivedData/Build/Products/Debug-iphonesimulator/*.app
+      - /tmp/xcodebuild_logs/*.log
